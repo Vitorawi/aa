@@ -205,6 +205,18 @@ button.item .ic svg { width: 42px; height: 42px; }
 @keyframes poopIn { from { opacity: 0; } to { opacity: 1; } }
 .stk { animation: stk 1.6s ease-in-out infinite; }
 @keyframes stk { 0%, 100% { opacity: .25; transform: translateY(0); } 50% { opacity: .9; transform: translateY(-8px); } }
+
+.coinchip { position: absolute; right: 10px; top: 98px; z-index: 4; padding: 4px 11px; border-radius: 12px; background: rgba(30,16,12,0.6); color: #ffe9a8; font: 600 14px Fredoka, sans-serif; backdrop-filter: blur(3px); }
+.coinchip b { font-weight: 600; }
+.coinchip.pop { animation: cpop .5s ease-out; }
+@keyframes cpop { 0% { transform: scale(1); } 40% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.gcap { margin: 6px 0; font-size: 0.78rem; color: rgba(255,255,255,0.8); line-height: 1.3; }
+.shh { margin: 12px 0 5px; font-family: Fredoka, sans-serif; font-size: 1rem; color: #fff; display: flex; flex-direction: column; font-weight: 600; }
+.shh small { font: 600 0.72rem Nunito, sans-serif; color: rgba(255,255,255,0.7); }
+.mbar { grid-column: 1; height: 7px; border-radius: 5px; background: rgba(255,255,255,0.18); overflow: hidden; }
+.mbar i { display: block; height: 100%; background: #5fd8b4; }
+.mgpad[hidden] { display: none; }
+.sheet button.item .stt.price { color: #ffe9a8; }
 </style>
 
 <style>body { margin: 0; }</style>
@@ -417,6 +429,7 @@ button.item .ic svg { width: 42px; height: 42px; }
         <div class="stat"><span>Banho</span><div class="bar"><i id="fHyg"></i></div></div>
         <div class="stat"><span>Energia</span><div class="bar"><i id="fEng"></i></div></div>
       </div>
+      <div class="coinchip" id="coinChip" aria-label="Seus ossos">🦴 <b id="coinN">0</b></div>
       <div class="pvtag" id="pvTag" hidden>Prévia</div>
       <div class="rail" id="rail">
         <button type="button" class="rbtn" data-p="treat" aria-label="Petiscos" aria-pressed="false"><svg viewBox="-48 -30 96 60" aria-hidden="true"><use href="#tr_bone"/></svg><span>Petiscos</span><i class="dot" hidden></i></button>
@@ -424,6 +437,7 @@ button.item .ic svg { width: 42px; height: 42px; }
         <button type="button" class="rbtn" data-p="room" aria-label="Quarto" aria-pressed="false"><svg viewBox="-130 -60 260 120" aria-hidden="true"><use href="#room_bed"/></svg><span>Quarto</span><i class="dot" hidden></i></button>
         <button type="button" class="rbtn" data-p="games" aria-label="Minigames" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="5.5" fill="#7ee8c4"/><path d="M7 9.5v6M4 12.5h6" stroke="#18433a" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="11.5" r="1.5" fill="#18433a"/><circle cx="19" cy="14" r="1.5" fill="#18433a"/></svg><span>Jogos</span></button>
         <button type="button" class="rbtn" data-p="care" aria-label="Cuidados" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="14" r="6" fill="#dff4ff" stroke="#5aa9d6" stroke-width="1.8"/><circle cx="16.5" cy="8" r="4" fill="#dff4ff" stroke="#5aa9d6" stroke-width="1.8"/><circle cx="17" cy="17" r="2.4" fill="#dff4ff" stroke="#5aa9d6" stroke-width="1.5"/></svg><span>Cuidar</span><i class="dot" hidden></i></button>
+        <button type="button" class="rbtn" data-p="shop" aria-label="Loja e missões" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="#ffd54a" stroke="#b8860b" stroke-width="2"/><path d="M8.5 15l7-6" stroke="#8a5a00" stroke-width="2.2" stroke-linecap="round"/><circle cx="8" cy="15.4" r="1.7" fill="#8a5a00"/><circle cx="16" cy="8.6" r="1.7" fill="#8a5a00"/></svg><span>Loja</span><i class="dot" hidden></i></button>
         <button type="button" class="rbtn" data-p="diary" aria-label="Diário e conquistas" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8-6.1-3.4-6.1 3.4 1.4-6.8L2.2 9.1l6.9-.8z" fill="#ffd54a" stroke="#7a5a00" stroke-width="1.5" stroke-linejoin="round"/></svg><span>Diário</span></button>
       </div>
       
@@ -439,6 +453,7 @@ button.item .ic svg { width: 42px; height: 42px; }
         <div class="sbody" id="closet"></div>
         <div class="sgames" id="sGames" hidden></div>
         <div class="sgames" id="sCare" hidden></div>
+        <div class="sgames" id="sShop" hidden></div>
         <div class="sact" id="sAct" hidden><span class="sname" id="sActName"></span><button type="button" class="primary small" id="sActBtn">Vestir</button></div>
         <div class="sdiary" id="sDiary" hidden>
           <div class="lvl">
@@ -512,6 +527,11 @@ button.item .ic svg { width: 42px; height: 42px; }
     ["mg_first", "Primeiro minigame", function (p) { return (p.mgPlays || 0) >= 1; }],
     ["mg_plat", "Pegou os 12 hambúrgueres", function (p) { return p.mgBest && p.mgBest.plat >= 12; }],
     ["mg_catch", "20 pontos na chuva de petiscos", function (p) { return p.mgBest && p.mgBest.catch >= 20; }],
+    ["mg_run", "40 pontos no Corre, corre!", function (p) { return p.mgBest && p.mgBest.run >= 40; }],
+    ["mg_mem", "Memória quase perfeita", function (p) { return p.mgBest && p.mgBest.mem >= 40; }],
+    ["mg_tug", "Venceu o gatinho", function (p) { return p.mgBest && p.mgBest.tug >= 20; }],
+    ["first_buy", "Primeira compra", function (p) { return (p.spent || 0) > 0; }],
+    ["rich_500", "Juntou 500 ossos", function (p) { return (p.coinsTotal || 0) >= 500; }],
     ["first_bath", "Primeiro banho", function (p) { return (p.baths || 0) >= 1; }],
     ["clean_5", "Limpou 5 cocôs", function (p) { return (p.cleans || 0) >= 5; }],
     ["naps_3", "3 sonecas", function (p) { return (p.naps || 0) >= 3; }],
@@ -519,19 +539,19 @@ button.item .ic svg { width: 42px; height: 42px; }
   ];
   var ITEMS = [
     { id: "tr_bone", slot: "treat", name: "Osso", req: null, hunger: 40, joy: 6, vb: [-45, -30, 90, 60] },
-    { id: "tr_cookie", slot: "treat", name: "Biscoitinho", req: { lv: 2 }, hunger: 28, joy: 10, vb: [-34, -34, 68, 68] },
+    { id: "tr_cookie", slot: "treat", name: "Biscoitinho", req: { lv: 2 }, hunger: 28, joy: 10, price: 60, vb: [-34, -34, 68, 68] },
     { id: "tr_sausage", slot: "treat", name: "Salsichinha", req: { ach: "meals_10" }, hunger: 50, joy: 6, vb: [-48, -26, 96, 52] },
-    { id: "tr_gold", slot: "treat", name: "Osso dourado", req: { lv: 5 }, hunger: 60, joy: 15, vb: [-45, -30, 90, 60] },
-    { id: "hat_party", slot: "head", name: "Chapéu de festa", req: { lv: 2 }, vb: [-70, -170, 140, 180] },
-    { id: "hat_beanie", slot: "head", name: "Gorro", req: { lv: 3 }, vb: [-85, -100, 170, 115] },
-    { id: "hat_crown", slot: "head", name: "Coroa", req: { lv: 6 }, vb: [-75, -95, 150, 105] },
-    { id: "gl_round", slot: "face", name: "Óculos redondos", req: { lv: 4 }, vb: [-135, -55, 270, 110] },
+    { id: "tr_gold", slot: "treat", name: "Osso dourado", req: { lv: 5 }, hunger: 60, joy: 15, price: 250, vb: [-45, -30, 90, 60] },
+    { id: "hat_party", slot: "head", name: "Chapéu de festa", req: { lv: 2 }, price: 90, vb: [-70, -170, 140, 180] },
+    { id: "hat_beanie", slot: "head", name: "Gorro", req: { lv: 3 }, price: 140, vb: [-85, -100, 170, 115] },
+    { id: "hat_crown", slot: "head", name: "Coroa", req: { lv: 6 }, price: 400, vb: [-75, -95, 150, 105] },
+    { id: "gl_round", slot: "face", name: "Óculos redondos", req: { lv: 4 }, price: 160, vb: [-135, -55, 270, 110] },
     { id: "gl_sun", slot: "face", name: "Óculos escuros", req: { ach: "streak_3" }, vb: [-135, -55, 270, 110] },
     { id: "hat_racecap", slot: "head", name: "Boné de piloto", req: { ach: "streak_14" }, vb: [-85, -90, 170, 130] },
     { id: "gear_suit", slot: "body", name: "Macacão de piloto", req: { ach: "streak_14" }, vb: [253, 712, 477, 288] },
-    { id: "room_ball", slot: "room", name: "Bolinha de tênis", req: { lv: 2 }, vb: [-45, -45, 90, 100] },
-    { id: "room_bed", slot: "room", name: "Caminha", req: { lv: 3 }, vb: [-130, -60, 260, 120] },
-    { id: "room_plant", slot: "room", name: "Plantinha", req: { lv: 4 }, vb: [-70, -200, 140, 210] },
+    { id: "room_ball", slot: "room", name: "Bolinha de tênis", req: { lv: 2 }, price: 70, vb: [-45, -45, 90, 100] },
+    { id: "room_bed", slot: "room", name: "Caminha", req: { lv: 3 }, price: 200, vb: [-130, -60, 260, 120] },
+    { id: "room_plant", slot: "room", name: "Plantinha", req: { lv: 4 }, price: 130, vb: [-70, -200, 140, 210] },
     { id: "room_lights", slot: "room", name: "Luzinhas", req: { ach: "streak_7" }, vb: [0, 0, 200, 60], ico: "ic_lights" }
   ];
   var ANCH = {
@@ -571,8 +591,11 @@ button.item .ic svg { width: 42px; height: 42px; }
   }
   function logEv(k, x) { P.log.unshift({ t: Date.now(), k: k, x: x }); if (P.log.length > 40) P.log.length = 40; }
   function addXP(n) {
-    var before = lvOf(P.xp); P.xp += n; var after = lvOf(P.xp);
-    if (after > before) queue.push("Subiu para o nível " + after + ": " + LV[Math.min(after - 1, LV.length - 1)] + "!");
+    var before = lvOf(P.xp); P.xp += n; qEvent("xp", n); var after = lvOf(P.xp);
+    if (after > before) {
+      var prize = 0; for (var l = before + 1; l <= after; l++) prize += 10 * l; addCoins(prize, "nível " + after);
+      queue.push("Subiu para o nível " + after + ": " + LV[Math.min(after - 1, LV.length - 1)] + "! +" + prize + " ossos");
+    }
   }
   function reqMet(it) {
     if (!it.req) return true;
@@ -586,10 +609,16 @@ button.item .ic svg { width: 42px; height: 42px; }
   }
   function checkProgress() {
     ACH.forEach(function (a) {
-      if (P.ach.indexOf(a[0]) < 0 && a[2](P)) { P.ach.push(a[0]); logEv("ach", "Conquista: " + a[1]); queue.push("Conquista: " + a[1] + "!"); }
+      if (P.ach.indexOf(a[0]) < 0 && a[2](P)) { P.ach.push(a[0]); logEv("ach", "Conquista: " + a[1]); addCoins(25, "conquista"); queue.push("Conquista: " + a[1] + "! +25 ossos"); }
     });
     var fresh = [];
-    ITEMS.forEach(function (it) { if (P.unlocked.indexOf(it.id) < 0 && reqMet(it)) { P.unlocked.push(it.id); fresh.push(it.name); } });
+    var shopNew = [];
+    ITEMS.forEach(function (it) {
+      if (P.unlocked.indexOf(it.id) >= 0 || !reqMet(it)) return;
+      if (it.price == null) { P.unlocked.push(it.id); fresh.push(it.name); }
+      else if (P.avail.indexOf(it.id) < 0) { P.avail.push(it.id); shopNew.push(it.name); }
+    });
+    if (shopNew.length) { logEv("shop", "Na loja: " + shopNew.join(", ")); queue.push("Novo na loja: " + (shopNew.length > 3 ? shopNew.slice(0, 3).join(", ") + " e mais " + (shopNew.length - 3) : shopNew.join(", ")) + "!"); }
     if (fresh.length) {
       logEv("ach", "Desbloqueou: " + fresh.join(", "));
       queue.push("Novo no armário: " + (fresh.length > 3 ? fresh.slice(0, 3).join(", ") + " e mais " + (fresh.length - 3) : fresh.join(", ")) + "!");
@@ -600,11 +629,11 @@ button.item .ic svg { width: 42px; height: 42px; }
     st.hunger = clamp(st.hunger + tr.hunger, 0, 100); st.joy = clamp(st.joy + tr.joy, 0, 100);
     P.feeds++; P.lastFed = Date.now(); P.pend = Math.min(3, (P.pend || 0) + 1); if (!P.nextPoop || P.nextPoop < Date.now()) P.nextPoop = Date.now() + rnd(20, 55) * 60000; if (asked) P.answered++;
     if (P.lastFeedDay !== dn) { P.streak = (P.lastFeedDay === dn - 1) ? P.streak + 1 : 1; P.lastFeedDay = dn; }
-    logEv("feed", (asked ? "Pediu e ganhou: " : "Comeu: ") + tr.name.toLowerCase());
+    logEv("feed", (asked ? "Pediu e ganhou: " : "Comeu: ") + tr.name.toLowerCase()); qEvent("feed", 1);
     addXP(h < 70 ? 15 : 3); checkProgress(); save(); renderAll();
   }
   function onPet() {
-    P.pets++; P.lastPet = Date.now(); logEv("pet", "Fez carinho");
+    P.pets++; P.lastPet = Date.now(); logEv("pet", "Fez carinho"); qEvent("pet", 1);
     if (Date.now() - P.lastPetXp > 60000) { P.lastPetXp = Date.now(); addXP(4); }
     checkProgress(); save(); renderAll();
   }
@@ -661,23 +690,24 @@ button.item .ic svg { width: 42px; height: 42px; }
   }
   function renderAct() {
     var box = $("sAct"), tag = $("pvTag"), btn = $("sActBtn"), nm = $("sActName");
-    if (!P || !panel || panel === "diary" || panel === "treat" || panel === "games" || panel === "care") { box.hidden = true; tag.hidden = true; return; }
+    if (!P || !panel || panel === "diary" || (panel === "treat" && !PV) || panel === "games" || panel === "care" || panel === "shop") { box.hidden = true; tag.hidden = true; return; }
     box.hidden = false;
     if (!PV) { nm.textContent = "Toque num item para ver como fica nele"; nm.className = "sname hintx"; btn.hidden = true; tag.hidden = true; applyZoom(); return; }
-    var it = itemById(PV), un = P.unlocked.indexOf(PV) >= 0, on = un && equipped(it);
+    var it = itemById(PV), un = P.unlocked.indexOf(PV) >= 0, on = un && equipped(it), av = !un && it.price != null && reqMet(it), can = av && (P.coins || 0) >= it.price;
     nm.className = "sname"; nm.textContent = it.name + (un ? "" : " (prévia)"); btn.hidden = false;
-    btn.disabled = !un; btn.textContent = !un ? "Libera: " + reqText(it) : on ? "Tirar" : (it.slot === "room" ? "Colocar" : "Vestir");
-    tag.hidden = on; tag.textContent = un ? "Prévia" : "Prévia · bloqueado";
+    btn.disabled = !un && !can; btn.textContent = !un ? (av ? (can ? "Comprar 🦴 " + it.price : "Faltam " + (it.price - (P.coins || 0)) + " 🦴") : "Libera: " + reqText(it)) : on ? "Tirar" : (it.slot === "room" ? "Colocar" : it.slot === "treat" ? "Usar" : "Vestir");
+    tag.hidden = on || it.slot === "treat"; tag.textContent = un ? "Prévia" : av ? "Prévia · à venda" : "Prévia · bloqueado";
     applyZoom();
   }
   function selectItem(id) {
     var it = itemById(id); if (!it) return;
-    if (it.slot === "treat") { if (P.unlocked.indexOf(id) >= 0) toggleItem(id); else speak("Libera: " + reqText(it), 2200); return; }
+    if (it.slot === "treat") { if (P.unlocked.indexOf(id) >= 0) toggleItem(id); else if (it.price != null && reqMet(it)) { PV = PV === id ? null : id; renderCloset(); renderAct(); } else speak("Libera: " + reqText(it), 2200); return; }
     PV = PV === id ? null : id;
     applyEquip(); renderCloset(); renderAct();
   }
   function commitPV() {
-    if (!PV || P.unlocked.indexOf(PV) < 0) return;
+    if (!PV) return;
+    if (P.unlocked.indexOf(PV) < 0) { var it0 = itemById(PV); if (it0 && it0.price != null && reqMet(it0) && (P.coins || 0) >= it0.price) buyItem(it0); return; }
     var id = PV; PV = null; toggleItem(id); renderAct();
   }
   function clearPV() { if (PV) { PV = null; if (P) applyEquip(); } renderAct(); }
@@ -691,10 +721,12 @@ button.item .ic svg { width: 42px; height: 42px; }
     if (it.slot === "head" || it.slot === "face" || it.slot === "body") { happyUntil = now + 900; if (equipped(it)) speak("Fiquei bonito?", 1800); }
     if (it.slot === "treat") speak("Hmm, " + it.name.toLowerCase() + "!", 1800);
   }
-  var panel = null, PANELS = { treat: "Petiscos", wear: "Roupinhas", room: "Quarto", diary: "Diário e conquistas", games: "Minigames", care: "Cuidados" };
+  var panel = null, PANELS = { treat: "Petiscos", wear: "Roupinhas", room: "Quarto", diary: "Diário e conquistas", games: "Minigames", care: "Cuidados", shop: "Loja e missões" };
   function inGroup(it, g) { return g === "wear" ? (it.slot === "head" || it.slot === "face" || it.slot === "body") : it.slot === g; }
   function updateBadges() {
     if (!P) return;
+    var sd = document.querySelector('.rbtn[data-p="shop"] .dot');
+    if (sd) { var rdy = false; [P.q, P.wq].forEach(function (L) { if (L) L.list.forEach(function (q) { if (!q.c && q.p >= q.g) rdy = true; }); }); sd.hidden = !rdy; }
     var cd = document.querySelector('.rbtn[data-p="care"] .dot'); if (cd) cd.hidden = !(P.poops > 0 || st.hyg < 30 || st.eng < 25);
     ["treat", "wear", "room"].forEach(function (g) {
       var has = false; ITEMS.forEach(function (it) { if (inGroup(it, g) && P.unlocked.indexOf(it.id) >= 0 && P.seen.indexOf(it.id) < 0) has = true; });
@@ -702,7 +734,7 @@ button.item .ic svg { width: 42px; height: 42px; }
     });
   }
   function renderCloset() {
-    if (!P || !panel || panel === "diary" || panel === "games" || panel === "care") return;
+    if (!P || !panel || panel === "diary" || panel === "games" || panel === "care" || panel === "shop") return;
     var svgNS = "http://www.w3.org/2000/svg", box = $("closet"), keep = box.scrollLeft; box.innerHTML = "";
     var ul = document.createElement("ul"); ul.className = "items";
     ITEMS.filter(function (it) { return inGroup(it, panel); }).forEach(function (it) {
@@ -713,7 +745,7 @@ button.item .ic svg { width: 42px; height: 42px; }
       var u = document.createElementNS(svgNS, "use"); u.setAttribute("href", "#" + (it.ico || it.id)); sv.appendChild(u); ic.appendChild(sv); b.appendChild(ic);
       var n = document.createElement("span"); n.className = "nm"; n.textContent = it.name; b.appendChild(n);
       var s = document.createElement("span"); s.className = "stt";
-      if (!un) s.textContent = "Libera: " + reqText(it) + " · ver"; else if (P.seen.indexOf(it.id) < 0) { s.textContent = "novo!"; s.className += " new"; } else if (on) s.textContent = "em uso"; else s.textContent = "\u00a0";
+      if (!un && it.price != null && reqMet(it)) { s.textContent = "🦴 " + it.price; s.className += " price"; } else if (!un) s.textContent = "Libera: " + reqText(it) + " · ver"; else if (P.seen.indexOf(it.id) < 0) { s.textContent = "novo!"; s.className += " new"; } else if (on) s.textContent = "em uso"; else s.textContent = "\u00a0";
       b.appendChild(s); li.appendChild(b); ul.appendChild(li);
     });
     box.appendChild(ul); box.scrollLeft = keep;
@@ -721,10 +753,10 @@ button.item .ic svg { width: 42px; height: 42px; }
   function openPanel(p) {
     if (!P) return;
     if (panel === p) { closePanel(); return; }
-    PV = null; applyEquip(); panel = p; $("rail").classList.add("compact"); var sh = $("sheet"); sh.className = "sheet" + (p === "diary" ? " tall" : ""); sh.hidden = false;
-    $("sTitle").textContent = PANELS[p]; $("closet").hidden = p === "diary" || p === "games" || p === "care"; $("sCare").hidden = p !== "care"; $("sDiary").hidden = p !== "diary"; $("sGames").hidden = p !== "games"; $("sHint").hidden = p !== "treat";
+    PV = null; applyEquip(); panel = p; $("rail").classList.add("compact"); var sh = $("sheet"); sh.className = "sheet" + (p === "diary" || p === "games" || p === "shop" ? " tall" : ""); sh.hidden = false;
+    $("sTitle").textContent = PANELS[p]; $("closet").hidden = p === "diary" || p === "games" || p === "care" || p === "shop"; $("sCare").hidden = p !== "care"; $("sShop").hidden = p !== "shop"; $("sDiary").hidden = p !== "diary"; $("sGames").hidden = p !== "games"; $("sHint").hidden = p !== "treat";
     document.querySelectorAll(".rbtn").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-p") === p ? "true" : "false"); });
-    if (p === "diary") renderAll(true); else if (p === "games") renderGames(); else if (p === "care") renderCare(); else { $("closet").scrollLeft = 0; renderCloset(); }
+    if (p === "diary") renderAll(true); else if (p === "games") renderGames(); else if (p === "care") renderCare(); else if (p === "shop") renderShop(); else { $("closet").scrollLeft = 0; renderCloset(); }
     renderAct();
   }
   function closePanel() {
@@ -735,7 +767,9 @@ button.item .ic svg { width: 42px; height: 42px; }
   /* ---------- diário ---------- */
   function renderAll(light) {
     if (!P) return;
+    rollover(); renderCoins();
     if (panel === "care") renderCare();
+    if (panel === "shop") renderShop();
     var lv = lvOf(P.xp), base = lvBase(lv), nxt = lvBase(lv + 1), i;
     $("dogName").textContent = P.dog; $("ownerLine").textContent = "de " + P.owner + " · " + periodName(hourNow());
     document.title = P.dog + " · Bichinho Virtual";
@@ -794,6 +828,7 @@ button.item .ic svg { width: 42px; height: 42px; }
     st.joy = clamp(p.joy - JOY_PER_H * el / 3600000, 5, 100);
     p.hyg = p.hyg == null ? 80 : p.hyg; p.eng = p.eng == null ? 80 : p.eng; p.poops = p.poops || 0; p.pend = p.pend || 0; p.nextPoop = p.nextPoop || 0;
     p.baths = p.baths || 0; p.cleans = p.cleans || 0; p.naps = p.naps || 0;
+    p.coins = p.coins || 0; p.coinsTotal = p.coinsTotal || 0; p.spent = p.spent || 0; p.inv = p.inv || { lucky: 0 }; p.avail = p.avail || [];
     st.hyg = clamp(p.hyg - (HYG_PER_H + 6 * p.poops) * el / 3600000, 5, 100);
     st.eng = clamp(p.eng - ENG_PER_H * el / 3600000, 10, 100);
     while (p.pend > 0 && p.nextPoop && p.nextPoop <= Date.now() && p.poops < 3) { p.poops++; p.pend--; p.nextPoop += 25 * 60000; }
@@ -955,7 +990,7 @@ button.item .ic svg { width: 42px; height: 42px; }
   var bathFrom = 0;
   function onBath() {
     var worth = bathFrom < 60;
-    P.baths++; logEv("bath", "Tomou banho"); st.joy = clamp(st.joy + 3, 0, 100); addXP(worth ? 12 : 3); checkProgress(); save(); renderAll();
+    P.baths++; logEv("bath", "Tomou banho"); qEvent("bath", 1); st.joy = clamp(st.joy + 3, 0, 100); addXP(worth ? 12 : 3); checkProgress(); save(); renderAll();
   }
   function startSleep() {
     var was = mode === "sleep"; poke(); if (was || busy()) return;
@@ -965,7 +1000,7 @@ button.item .ic svg { width: 42px; height: 42px; }
   function endSleep() {
     if (!forcedSleep) return; forcedSleep = false;
     var gain = st.eng - sleepStartEng, xp = gain >= 30 ? 10 : gain >= 12 ? 4 : 0;
-    if (gain >= 15) { P.naps++; logEv("sleep", "Tirou uma soneca"); }
+    if (gain >= 15) { P.naps++; logEv("sleep", "Tirou uma soneca"); qEvent("nap", 1); }
     if (xp) addXP(xp); checkProgress(); save(); renderAll();
   }
   var POOP_SLOTS = [[210, 1120], [760, 1135], [100, 1060]], poopG = $("poopG");
@@ -984,7 +1019,7 @@ button.item .ic svg { width: 42px; height: 42px; }
     var n = Math.min(count, P.poops || 0); if (!n) return;
     poke();
     for (var i = 0; i < n; i++) { var sl = POOP_SLOTS[P.poops - 1 - i]; for (var k = 0; k < 6; k++) addBubble(sl[0] + (Math.random() - 0.5) * 80, sl[1] - 40); }
-    P.poops -= n; P.cleans += n; logEv("clean", "Limpou o cocô (" + n + ")"); st.joy = clamp(st.joy + 2, 0, 100); addXP(4 * n);
+    P.poops -= n; P.cleans += n; qEvent("clean", n); logEv("clean", "Limpou o cocô (" + n + ")"); st.joy = clamp(st.joy + 2, 0, 100); addXP(4 * n);
     speak("Ufa, limpinho!", 2000); checkProgress(); save(); renderPoops(); renderAll(); updateBadges();
   }
   poopG.addEventListener("pointerdown", function (ev) { ev.stopPropagation(); });
@@ -1265,28 +1300,150 @@ button.item .ic svg { width: 42px; height: 42px; }
     if (now > msgUntil) { if (queue.length) speak(queue.shift(), 3400); else if (say.textContent !== moodText()) say.textContent = moodText(); }
     requestAnimationFrame(frame);
   }
-  /* ---------- minigames ---------- */
-  var MG_LIMIT = 3, MG_GAMES = [
-    { id: "plat", name: "Corrida na sala", desc: "Pule nos móveis e pegue os 12 hambúrgueres até a tigela.", xp: "até 30 XP" },
-    { id: "catch", name: "Chuva de petiscos", desc: "30 segundos pegando petiscos. Cuidado com as meias!", xp: "até 30 XP" }
+  /* ---------- economia: ossos, missões e loja ---------- */
+  var Q_DAILY = [["feed", 2, 20, "Dar 2 petiscos"], ["feed", 3, 30, "Dar 3 petiscos"], ["pet", 3, 15, "Fazer carinho 3 vezes"], ["bath", 1, 25, "Dar um banho"], ["clean", 2, 20, "Limpar 2 cocôs"], ["mg", 2, 30, "Jogar 2 minigames"], ["mg", 3, 40, "Jogar 3 minigames"], ["nap", 1, 20, "Tirar uma soneca"], ["xp", 40, 25, "Ganhar 40 XP"], ["spend", 30, 25, "Gastar 30 ossos na loja"]];
+  var Q_WEEKLY = [["feed", 15, 70, "Dar 15 petiscos"], ["mg", 12, 90, "Jogar 12 minigames"], ["clean", 8, 60, "Limpar 8 cocôs"], ["bath", 4, 60, "Dar 4 banhos"], ["pet", 30, 50, "Fazer 30 carinhos"], ["nap", 4, 60, "Tirar 4 sonecas"], ["xp", 200, 90, "Ganhar 200 XP"], ["spend", 150, 70, "Gastar 150 ossos na loja"]];
+  var SHOP = [
+    { id: "lucky", name: "Biscoito da sorte", desc: "Dobra os ossos do próximo minigame.", price: 30 },
+    { id: "pass", name: "Passe extra", desc: "Mais 1 jogada de minigame, vale só hoje.", price: 45 },
+    { id: "feast", name: "Banquete", desc: "Barriguinha cheia na hora e +8 XP.", price: 35 },
+    { id: "soap", name: "Sabonete perfumado", desc: "Banho instantâneo: higiene em 100 e +6 XP.", price: 25 }
   ];
+  function weekNum(dn) { return Math.floor((dn + 3) / 7); }
+  function genQuests(pool, n) {
+    var a = pool.slice(), out = [], used = {};
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; }
+    a.forEach(function (q) { if (out.length < n && !used[q[0]]) { used[q[0]] = 1; out.push({ t: q[0], g: q[1], r: q[2], x: q[3], p: 0, c: false }); } });
+    return out;
+  }
+  function addCoins(n, why) {
+    if (!P || n <= 0) return; P.coins = (P.coins || 0) + n; P.coinsTotal = (P.coinsTotal || 0) + n;
+    if (n >= 10 && why) logEv("coin", "+" + n + " ossos · " + why);
+    renderCoins(true);
+  }
+  function spend(n) { P.coins -= n; P.spent = (P.spent || 0) + n; qEvent("spend", n); renderCoins(true); }
+  function renderCoins(pop) {
+    if (!P) return; var el = $("coinN"); if (el) el.textContent = P.coins || 0;
+    if (pop) { var ch = $("coinChip"); ch.classList.remove("pop"); void ch.offsetWidth; ch.classList.add("pop"); }
+  }
+  function qEvent(type, n) {
+    if (!P) return;
+    [P.q, P.wq].forEach(function (L) {
+      if (!L) return;
+      L.list.forEach(function (q) {
+        if (q.t !== type || q.c || q.p >= q.g) return;
+        q.p = Math.min(q.g, q.p + n);
+        if (q.p >= q.g) queue.push("Missão cumprida: " + q.x + "! Resgate na Loja.");
+      });
+    });
+  }
+  function rollover() {
+    if (!P) return;
+    var dn = dayNum(Date.now()), wk = weekNum(dn);
+    if (!P.q || P.q.d !== dn) P.q = { d: dn, list: genQuests(Q_DAILY, 3), b: false };
+    if (!P.wq || P.wq.w !== wk) P.wq = { w: wk, list: genQuests(Q_WEEKLY, 3), b: false };
+    if (P.lastBonusDay !== dn) {
+      P.lastBonusDay = dn; var amt = 10 + 5 * Math.min(streakNow(), 10);
+      addCoins(amt, "bônus do dia"); queue.push("Bônus do dia: +" + amt + " ossos!");
+    }
+  }
+  function qClaim(scope, i) {
+    var L = scope === "d" ? P.q : P.wq, q = L.list[i]; if (!q || q.c || q.p < q.g) return;
+    q.c = true; addCoins(q.r, "missão"); speak("+" + q.r + " ossos!", 1800);
+    if (!L.b && L.list.every(function (c) { return c.c; })) {
+      L.b = true; var bn = scope === "d" ? 25 : 100; addCoins(bn, scope === "d" ? "todas as missões do dia" : "todas as missões da semana");
+      queue.push((scope === "d" ? "Missões do dia completas" : "Missões da semana completas") + ": bônus de " + bn + " ossos!");
+    }
+    save(); renderShop(); updateBadges();
+  }
+  function buyItem(it) {
+    spend(it.price); P.unlocked.push(it.id); logEv("shop", "Comprou: " + it.name); speak("Comprou! Obrigado!", 1800);
+    var id = it.id; PV = null; toggleItem(id); renderAct(); checkProgress(); save(); renderAll(true);
+  }
+  function buyShop(id) {
+    var s = null; SHOP.forEach(function (x) { if (x.id === id) s = x; }); if (!s) return;
+    if ((P.coins || 0) < s.price) { speak("Faltam ossos!", 1800); return; }
+    spend(s.price); logEv("shop", "Comprou: " + s.name);
+    if (id === "lucky") { P.inv.lucky = (P.inv.lucky || 0) + 1; speak("Biscoito da sorte guardado!", 2000); }
+    else if (id === "pass") { mgState().extra = (mgState().extra || 0) + 1; speak("Mais uma jogada hoje!", 2000); }
+    else if (id === "feast") {
+      st.hunger = 100; st.joy = clamp(st.joy + 10, 0, 100); P.pend = Math.min(3, (P.pend || 0) + 1); if (!P.nextPoop || P.nextPoop < Date.now()) P.nextPoop = Date.now() + rnd(20, 55) * 60000;
+      addXP(8); happyUntil = now + 1800; speak("Que banquete!", 2200); for (var i = 0; i < 5; i++) addHeart(430 + Math.random() * 100, 360 + Math.random() * 40, 14 + Math.random() * 8);
+    } else if (id === "soap") {
+      st.hyg = 100; st.joy = clamp(st.joy + 6, 0, 100); addXP(6); happyUntil = now + 1800; speak("Cheirosinho!", 2200); for (var k = 0; k < 8; k++) addBubble(380 + Math.random() * 200, 220 + Math.random() * 140);
+    }
+    checkProgress(); save(); renderShop(); renderAll(true);
+  }
+  function renderShop() {
+    var box = $("sShop"); if (!P || !box) return; rollover(); box.innerHTML = ""; var s = mgState();
+    function sec(t, sub) { var h = document.createElement("h4"); h.className = "shh"; h.textContent = t; if (sub) { var sp = document.createElement("small"); sp.textContent = sub; h.appendChild(sp); } box.appendChild(h); }
+    function list() { var ul = document.createElement("ul"); ul.className = "glist"; box.appendChild(ul); return ul; }
+    function row(ul, title, line, pct, btnTxt, attr, dis) {
+      var li = document.createElement("li"), b = document.createElement("b"); b.textContent = title; li.appendChild(b);
+      var d = document.createElement("span"); d.className = "gd"; d.textContent = line; li.appendChild(d);
+      if (pct != null) { var bar = document.createElement("div"); bar.className = "mbar"; var i2 = document.createElement("i"); i2.style.width = Math.round(pct * 100) + "%"; bar.appendChild(i2); li.appendChild(bar); }
+      var bt = document.createElement("button"); bt.type = "button"; bt.className = "primary small"; bt.textContent = btnTxt; bt.disabled = dis; bt.setAttribute(attr[0], attr[1]); bt.style.gridRow = "1 / span 3"; li.appendChild(bt); ul.appendChild(li);
+    }
+    var wallet = document.createElement("p"); wallet.className = "gcap"; wallet.textContent = "Você tem " + (P.coins || 0) + " ossos · ganhos hoje nos minigames: " + (s.coins || 0) + "/" + MG_COIN_CAP; box.appendChild(wallet);
+    function qList(scope, L, bonus, resetTxt) {
+      var ul = list();
+      L.list.forEach(function (q, i) {
+        var done = q.p >= q.g;
+        row(ul, q.x, (q.c ? "Resgatada" : q.p + "/" + q.g) + " · prêmio: " + q.r + " ossos", q.p / q.g, q.c ? "Feito" : done ? "Resgatar" : "Em andamento", ["data-q", scope + ":" + i], q.c || !done);
+      });
+      var all = L.list.every(function (c) { return c.c; });
+      var n = document.createElement("p"); n.className = "gcap"; n.textContent = (all ? "Bônus recebido! " : "Complete as 3 e ganhe +" + bonus + " ossos. ") + resetTxt; box.appendChild(n);
+    }
+    var nd = new Date(); var left = new Date(nd.getFullYear(), nd.getMonth(), nd.getDate() + 1).getTime() - nd.getTime();
+    sec("Missões de hoje"); qList("d", P.q, 25, "Renovam em " + fmtDur(left) + ".");
+    var dn = dayNum(Date.now()), wd = 7 - ((dn + 3) % 7);
+    sec("Missões da semana"); qList("w", P.wq, 100, "Renovam na segunda-feira (em " + wd + (wd === 1 ? " dia" : " dias") + ").");
+    sec("Loja", "Roupas, petiscos e móveis ficam nas abas deles: toque no item para ver e comprar.");
+    var ul = list();
+    SHOP.forEach(function (x) {
+      var extra = x.id === "lucky" ? " Você tem " + (P.inv.lucky || 0) + "." : x.id === "pass" ? " Extras hoje: " + (s.extra || 0) + "." : "";
+      row(ul, x.name, x.desc + extra, null, "🦴 " + x.price, ["data-b", x.id], (P.coins || 0) < x.price);
+    });
+  }
+  $("sShop").addEventListener("click", function (ev) {
+    var b = ev.target.closest ? ev.target.closest("button") : null; if (!b || b.disabled) return;
+    var q = b.getAttribute("data-q"), s2 = b.getAttribute("data-b");
+    if (q) { var p = q.split(":"); qClaim(p[0], +p[1]); } else if (s2) buyShop(s2);
+  });
+
+  /* ---------- minigames ---------- */
+  var MG_LIMIT = 3, MG_COIN_CAP = 120, MG_XP_CAP = 120, MG_GAMES = [
+    { id: "plat", name: "Corrida na sala", desc: "Pule nos móveis e pegue os 12 hambúrgueres até a tigela.", xp: "até 30 XP · até 36 ossos" },
+    { id: "catch", name: "Chuva de petiscos", desc: "30 segundos pegando petiscos. Cuidado com as meias!", xp: "até 30 XP · até 40 ossos" },
+    { id: "run", name: "Corre, corre!", desc: "Corra sem parar, pule as caixas e pegue hambúrgueres. Você tem 3 vidas.", xp: "até 30 XP · até 40 ossos" },
+    { id: "mem", name: "Memória dos petiscos", desc: "Ache os 6 pares de cartas em 60 segundos.", xp: "até 30 XP · até 40 ossos" },
+    { id: "tug", name: "Cabo de guerra", desc: "Toque rápido para puxar a corda mais forte que o gatinho.", xp: "até 30 XP · até 40 ossos" }
+  ];
+  var MG_INFO = {
+    plat: "Setas ou botões para andar e pular. Chegue na tigela pegando o máximo de hambúrgueres.",
+    catch: "Mova o cachorro para pegar os petiscos. Meias tiram pontos!",
+    run: "Toque na tela ou no botão para pular as caixas. Pegue os hambúrgueres no ar. 40 segundos, 3 vidas.",
+    mem: "Toque nas cartas para virar e encontrar os pares. Você tem 60 segundos.",
+    tug: "Toque o mais rápido que puder para puxar a corda! O gatinho puxa em ondas."
+  };
   function mgState() {
     var dn = dayNum(Date.now());
-    if (!P.mg || P.mg.d !== dn) P.mg = { d: dn, n: { plat: 0, catch: 0 } };
-    if (!P.mgBest) P.mgBest = { plat: 0, catch: 0 };
+    if (!P.mg || P.mg.d !== dn) P.mg = { d: dn, n: {}, coins: 0, xp: 0, extra: 0 };
+    if (!P.mgBest) P.mgBest = {};
     if (!P.mgPlays) P.mgPlays = 0;
     return P.mg;
   }
-  function mgLeft(id) { return Math.max(0, MG_LIMIT - (mgState().n[id] || 0)); }
+  function mgLeft(id) { var s = mgState(); return Math.max(0, MG_LIMIT - (s.n[id] || 0)) + (s.extra || 0); }
   function renderGames() {
-    var box = $("sGames"); if (!P) return; mgState(); box.innerHTML = "";
+    var box = $("sGames"); if (!P) return; var s = mgState(); box.innerHTML = "";
+    var cap = document.createElement("p"); cap.className = "gcap"; cap.textContent = "Hoje nos minigames: ossos " + (s.coins || 0) + "/" + MG_COIN_CAP + " · XP " + (s.xp || 0) + "/" + MG_XP_CAP + (s.extra ? " · passes extras: " + s.extra : ""); box.appendChild(cap);
     var ul = document.createElement("ul"); ul.className = "glist";
     MG_GAMES.forEach(function (g) {
       var li = document.createElement("li"), left = mgLeft(g.id);
       var h = document.createElement("b"); h.textContent = g.name; li.appendChild(h);
       var d = document.createElement("span"); d.className = "gd"; d.textContent = g.desc; li.appendChild(d);
       var m = document.createElement("span"); m.className = "gm";
-      m.textContent = g.xp + " · recorde: " + (P.mgBest[g.id] || 0) + (g.id === "plat" ? "/12" : " pts") + " · hoje: " + left + "/" + MG_LIMIT + " restantes";
+      m.textContent = g.xp + " · recorde: " + (P.mgBest[g.id] || 0) + (g.id === "plat" ? "/12" : " pts") + " · jogadas hoje: " + left;
       li.appendChild(m);
       var b = document.createElement("button"); b.type = "button"; b.className = "primary small"; b.setAttribute("data-g", g.id);
       b.disabled = left <= 0; b.textContent = left > 0 ? "Jogar" : "Volta amanhã"; li.appendChild(b); ul.appendChild(li);
@@ -1548,55 +1705,6 @@ function draw(ts) {
   }
 
   
-  function mgHud() {
-    if (game === "plat") { $("mgScore").textContent = "🍔 " + got + "/12"; $("mgTime").textContent = elapsed.toFixed(1) + "s"; }
-    else { $("mgScore").textContent = "⭐ " + Math.max(0, score); $("mgTime").textContent = Math.max(0, tLeft).toFixed(1) + "s"; }
-  }
-  function mgOverlay(t, p, btn, show) { $("mgovT").textContent = t; $("mgovP").textContent = p; $("mgGo").textContent = btn; $("mgov").hidden = !show; }
-  function dogObj() { return { x: 60, y: 282, vx: 0, vy: 0, ground: true, sq: 0, ph: 0, face: 1 }; }
-  function mgOpen(id) {
-    if (!P || mgLeft(id) <= 0) return;
-    poke(); game = id; state = "ready"; counted = false; closePanel(); mgEl.hidden = false;
-    $("mgTitle").textContent = MG_GAMES.filter(function (g) { return g.id === id; })[0].name;
-    $("mgjump").hidden = id !== "plat";
-    camX = 0; ball = dogObj(); coins = []; items = []; got = 0; score = 0; elapsed = 0; tLeft = 30; mgHud();
-    mgOverlay(id === "plat" ? "Corrida na sala" : "Chuva de petiscos",
-      (id === "plat" ? "Setas ou botões para andar e pular. Chegue na tigela pegando o máximo de hambúrgueres." : "Mova " + P.dog + " para pegar os petiscos. Meias tiram pontos!") + " Restam " + mgLeft(id) + " jogadas hoje; esta começa a contar ao jogar.", "Jogar", true);
-    lastTs = 0; acc = 0; cancelAnimationFrame(mgRaf); mgRaf = requestAnimationFrame(mgLoop);
-  }
-  function mgBegin() {
-    var s = mgState(); s.n[game] = (s.n[game] || 0) + 1; counted = true; P.mgPlays++; save();
-    keys.left = keys.right = keys.jump = false; jumpHeld = false; jumpBuf = 0; coyote = 0; shake = 0;
-    ball = dogObj(); camX = 0; got = 0; score = 0; items = []; spawnT = 0; tLeft = 30; elapsed = 0; t0 = performance.now(); acc = 0;
-    if (game === "plat") coins = coinPos.map(function (p) { return { x: p[0], y: p[1], got: false }; });
-    else { ball.x = W / 2; ball.y = 282; }
-    state = "play"; mgOverlay("", "", "", false); mgHud(); if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
-  }
-  function finishPlat(won) {
-    if (state !== "play") return; state = "done";
-    var t = elapsed, xp = Math.round(got * 1.5) + (won ? 6 + Math.max(0, Math.min(6, Math.round((60 - t) / 5))) : 0);
-    mgSettle("plat", got, xp, won ? "Você chegou! " + got + " de 12 hambúrgueres em " + t.toFixed(1) + "s." : "Parou no meio. " + got + " de 12 hambúrgueres.");
-  }
-  function finishCatch() {
-    if (state !== "play") return; state = "done";
-    var sc = Math.max(0, score), xp = Math.min(30, Math.round(sc * 1.5));
-    mgSettle("catch", sc, xp, "Tempo esgotado! " + sc + " pontos.");
-  }
-  function mgSettle(id, sc, xp, txt) {
-    var rec = sc > (P.mgBest[id] || 0); if (rec) P.mgBest[id] = sc;
-    P.lastPlay = Date.now(); st.joy = clamp(st.joy + 10, 0, 100); st.hunger = clamp(st.hunger - 4, 0, 100); st.eng = clamp(st.eng - 6, 10, 100); st.hyg = clamp(st.hyg - 3, 5, 100);
-    logEv("play", MG_GAMES.filter(function (g) { return g.id === id; })[0].name + ": " + sc + (id === "plat" ? "/12" : " pts") + " (+" + xp + " XP)");
-    addXP(xp); checkProgress(); save(); renderAll();
-    var left = mgLeft(id);
-    mgOverlay(rec && sc > 0 ? "Novo recorde!" : "Fim de jogo", txt + " +" + xp + " XP. " + (left > 0 ? "Restam " + left + " hoje." : "Acabaram as jogadas de hoje."), left > 0 ? "Jogar de novo" : "Voltar", true);
-    mgEl.setAttribute("data-over", left > 0 ? "again" : "exit"); mgHud();
-  }
-  function mgClose() {
-    if (state === "play" && game === "plat") finishPlat(false);
-    else if (state === "play" && game === "catch") finishCatch();
-    state = "off"; mgEl.hidden = true; cancelAnimationFrame(mgRaf); keys.left = keys.right = keys.jump = false; jumpHeld = false;
-    if (P) { renderGames(); updateBadges(); }
-  }
   function stepCatch() {
     var b = ball, ax = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
     b.vx += ax * 0.8; b.vx *= 0.84; if (Math.abs(b.vx) > 5.2) b.vx = 5.2 * Math.sign(b.vx);
@@ -1648,18 +1756,231 @@ function draw(ts) {
     ctx.save(); ctx.translate(b.x, b.y + R); ctx.scale(1 + b.sq, 1 - b.sq); ctx.translate(0, -R); drawDog(b, ts); ctx.restore();
     ctx.restore();
   }
+
+  /* corre, corre */
+  var runSp = 4.2, runLives = 3, runInv = 0, runGap = 0;
+  function stepRun() {
+    var b = ball, el = (performance.now() - t0) / 1000; elapsed = el; tLeft = 40 - el;
+    runSp = 4.2 + el * 0.07; camX += runSp;
+    if (jumpBuf > 0) jumpBuf--;
+    if (jumpBuf > 0 && b.ground) { b.vy = -12.2; b.ground = false; jumpBuf = 0; b.sq = -0.3; }
+    b.vy += jumpHeld && b.vy < 0 ? 0.42 : 0.72; b.y += b.vy;
+    if (b.y >= 282) { if (!b.ground && b.vy > 6) b.sq = 0.25; b.y = 282; b.vy = 0; b.ground = true; } else b.ground = false;
+    b.sq *= 0.82; if (b.ground) b.ph += 0.42; if (runInv > 0) runInv--; if (shake > 0) shake--;
+    runGap -= runSp;
+    if (runGap <= 0) {
+      var kinds = [[36, 30, "box"], [40, 46, "bigbox"], [54, 22, "pillow"]], kd = kinds[Math.floor(Math.random() * 3)], ox = W + 50;
+      items.push({ k: "ob", t: kd[2], x: ox, w: kd[0], h: kd[1] });
+      for (var q = -1; q <= 1; q++) items.push({ k: "bg", x: ox + kd[0] / 2 + q * 42, y: 214 + Math.abs(q) * 26 });
+      runGap = 330 + Math.random() * 170 + runSp * 14;
+      if (Math.random() < 0.5) items.push({ k: "bg", x: ox + 200, y: 262 });
+    }
+    items.forEach(function (it) {
+      it.x -= runSp;
+      if (it.k === "ob" && runInv <= 0 && Math.abs(b.x - (it.x + it.w / 2)) < it.w / 2 + 11 && b.y + 15 > 300 - it.h) { runLives--; runInv = 80; shake = 16; if (runLives <= 0) finishRun(); }
+      if (it.k === "bg" && !it.dead && Math.hypot(it.x - b.x, it.y - b.y) < 26) { it.dead = true; got++; }
+    });
+    items = items.filter(function (it) { return !it.dead && it.x > -90; });
+    score = got * 2 + Math.floor(el);
+    if (tLeft <= 0 && state === "play") finishRun();
+  }
+  function drawOb(it) {
+    var y = 300 - it.h;
+    if (it.t === "pillow") { rr(it.x, y, it.w, it.h, 10); ctx.fillStyle = "#a99d8f"; ctx.fill(); ctx.fillStyle = "rgba(255,255,255,0.25)"; ctx.fillRect(it.x + 6, y + 2, it.w - 12, 3); return; }
+    ctx.fillStyle = "#c9a06a"; ctx.fillRect(it.x, y, it.w, it.h); ctx.fillStyle = "rgba(0,0,0,0.12)"; ctx.fillRect(it.x, y, it.w, 3);
+    ctx.fillStyle = "#e6cfa0"; ctx.fillRect(it.x + it.w / 2 - 4, y, 8, it.h); ctx.strokeStyle = "rgba(0,0,0,0.18)"; ctx.lineWidth = 1.5; ctx.strokeRect(it.x, y, it.w, it.h);
+  }
+  function drawRun(ts) {
+    var g = ctx.createLinearGradient(0, 0, 0, MH); g.addColorStop(0, C["wall"]); g.addColorStop(1, C["wall-low"]);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, MH); drawWindows();
+    ctx.fillStyle = "#f1f1ee"; ctx.fillRect(0, 286, W, 14); ctx.fillStyle = "rgba(0,0,0,0.1)"; ctx.fillRect(0, 286, W, 1.5);
+    ctx.save(); ctx.translate(-Math.round(camX), 0); drawPlat(plats[0]); ctx.restore();
+    items.forEach(function (it, k) { if (it.k === "ob") drawOb(it); else drawBurger(it, k, ts); });
+    var b = ball, ox = shake > 0 ? Math.sin(shake * 2.3) * 3 : 0;
+    if (runInv > 0 && Math.floor(runInv / 5) % 2) return;
+    ctx.save(); ctx.translate(ox, 0);
+    ctx.fillStyle = "rgba(0,0,0,0.2)"; ctx.beginPath(); ctx.ellipse(b.x, 300, R * 1.1 * Math.max(0.5, 1 - (282 - b.y) / 260), 3, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.save(); ctx.translate(b.x, b.y + R); ctx.scale(1 + b.sq, 1 - b.sq); ctx.translate(0, -R); drawDog(b, ts); ctx.restore();
+    ctx.restore();
+  }
+  /* memória */
+  var memCards = [], memFirst = -1, memLock = 0, memMiss = 0, memPairs = 0, memHide = null;
+  function memInit() {
+    var ks = ["burger", "bone", "gold", "heart", "ball", "star"], a = ks.concat(ks);
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; }
+    memCards = a.map(function (k) { return { k: k, up: false, done: false }; }); memFirst = -1; memLock = 0; memMiss = 0; memPairs = 0; memHide = null;
+  }
+  function memPos(i) { return { x: 59 + (i % 4) * 134, y: 22 + Math.floor(i / 4) * 110, w: 120, h: 96 }; }
+  function memTap(px, py) {
+    if (memLock > performance.now()) return;
+    for (var i = 0; i < 12; i++) {
+      var p = memPos(i);
+      if (px >= p.x && px <= p.x + p.w && py >= p.y && py <= p.y + p.h) {
+        var c = memCards[i]; if (c.up || c.done) return; c.up = true;
+        if (memFirst < 0) memFirst = i;
+        else {
+          var f = memCards[memFirst];
+          if (f.k === c.k) { f.done = c.done = true; memPairs++; memFirst = -1; mgHud(); if (memPairs === 6) finishMem(true); }
+          else { memMiss++; memHide = [memFirst, i]; memLock = performance.now() + 700; memFirst = -1; }
+        }
+        return;
+      }
+    }
+  }
+  function stepMem() {
+    var el = (performance.now() - t0) / 1000; elapsed = el; tLeft = 60 - el;
+    if (memHide && performance.now() >= memLock) { memHide.forEach(function (i) { memCards[i].up = false; }); memHide = null; }
+    if (tLeft <= 0 && state === "play") finishMem(false);
+  }
+  function drawIcon(k, ts) {
+    if (k === "burger") { ctx.save(); ctx.scale(2.3, 2.3); ctx.translate(0, 4); drawBurger({ x: 0, y: 0 }, 0, 0); ctx.restore(); }
+    else if (k === "bone" || k === "gold") { ctx.save(); ctx.scale(1.9, 1.9); drawItem({ k: k, x: 0, y: 0, rot: -0.5 - 0 * ts }, 0); ctx.restore(); }
+    else if (k === "heart") { ctx.save(); ctx.scale(2.2, 2.2); ctx.beginPath(); ctx.moveTo(0, 12); ctx.bezierCurveTo(-18, 0, -12, -14, 0, -6); ctx.bezierCurveTo(12, -14, 18, 0, 0, 12); ctx.fillStyle = "#ff5a7a"; ctx.fill(); ctx.strokeStyle = "#8a1f3a"; ctx.lineWidth = 2; ctx.stroke(); ctx.restore(); }
+    else if (k === "ball") { ctx.beginPath(); ctx.arc(0, 0, 22, 0, Math.PI * 2); ctx.fillStyle = "#d8e84a"; ctx.fill(); ctx.strokeStyle = "#8a9a1c"; ctx.lineWidth = 3; ctx.stroke(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(-18, 0, 20, -0.9, 0.9); ctx.stroke(); ctx.beginPath(); ctx.arc(18, 0, 20, Math.PI - 0.9, Math.PI + 0.9); ctx.stroke(); }
+    else { ctx.beginPath(); for (var i = 0; i < 10; i++) { var a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 11 : 25; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); } ctx.closePath(); ctx.fillStyle = "#ffd23f"; ctx.fill(); ctx.strokeStyle = "#b8860b"; ctx.lineWidth = 3; ctx.lineJoin = "round"; ctx.stroke(); }
+  }
+  function drawMem(ts) {
+    var g = ctx.createLinearGradient(0, 0, 0, MH); g.addColorStop(0, "#6b3a22"); g.addColorStop(1, "#3a2216"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, MH);
+    memCards.forEach(function (c, i) {
+      var p = memPos(i); rr(p.x, p.y, p.w, p.h, 12);
+      if (c.up || c.done) { ctx.fillStyle = c.done ? "#e6f6e9" : "#fff8e8"; ctx.fill(); ctx.strokeStyle = c.done ? "#4caf72" : "#d6b878"; ctx.lineWidth = 3; ctx.stroke(); ctx.save(); ctx.translate(p.x + p.w / 2, p.y + p.h / 2); drawIcon(c.k, ts); ctx.restore(); }
+      else {
+        var gr = ctx.createLinearGradient(p.x, p.y, p.x, p.y + p.h); gr.addColorStop(0, "#c0392b"); gr.addColorStop(1, "#8e2a20"); ctx.fillStyle = gr; ctx.fill(); ctx.strokeStyle = "rgba(255,255,255,0.35)"; ctx.lineWidth = 3; ctx.stroke();
+        ctx.fillStyle = "rgba(255,255,255,0.55)"; var cx = p.x + p.w / 2, cy = p.y + p.h / 2 + 4;
+        ctx.beginPath(); ctx.ellipse(cx, cy + 8, 14, 11, 0, 0, 7); ctx.fill();
+        [[-17, -8], [-6, -17], [6, -17], [17, -8]].forEach(function (o) { ctx.beginPath(); ctx.ellipse(cx + o[0], cy + o[1], 5, 6.5, 0, 0, 7); ctx.fill(); });
+      }
+    });
+  }
+  /* cabo de guerra */
+  var tgM = 0, tgSurge = 0, tgNext = 0, tgPull = 0;
+  function stepTug() {
+    var el = (performance.now() - t0) / 1000; elapsed = el; tLeft = 25 - el;
+    if (tgNext <= 0) { tgSurge = 36; tgNext = rnd(90, 170); } tgNext--;
+    tgM -= 0.0022 + (tgSurge > 0 ? 0.0045 : 0) + el * 0.00004; if (tgSurge > 0) tgSurge--;
+    if (jumpBuf > 0) { jumpBuf = 0; tgM += 0.04; tgPull = 8; }
+    if (tgPull > 0) tgPull--;
+    tgM = clamp(tgM, -1, 1);
+    if (tgM >= 1) finishTug(true); else if (tgM <= -1 || tLeft <= 0) finishTug(false);
+  }
+  function drawCat(x, y, lean, ts) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(lean);
+    ctx.strokeStyle = "#7b8794"; ctx.lineWidth = 7; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(26, -14); ctx.quadraticCurveTo(54, -12 + Math.sin(ts / 150) * 8, 46, -46); ctx.stroke();
+    ctx.fillStyle = "#8d99a6"; ctx.beginPath(); ctx.ellipse(8, -22, 28, 22, 0, 0, 7); ctx.fill();
+    ctx.fillStyle = "#a2adb9"; ctx.beginPath(); ctx.arc(-16, -44, 19, 0, 7); ctx.fill();
+    ctx.fillStyle = "#8d99a6"; [[-31, -54, -27, -74, -14, -58], [-17, -60, -4, -72, 0, -52]].forEach(function (t) { ctx.beginPath(); ctx.moveTo(t[0], t[1]); ctx.lineTo(t[2], t[3]); ctx.lineTo(t[4], t[5]); ctx.fill(); });
+    ctx.strokeStyle = "#1b222b"; ctx.lineWidth = 2.6; ctx.beginPath(); ctx.moveTo(-30, -48); ctx.lineTo(-22, -46); ctx.moveTo(-12, -46); ctx.lineTo(-4, -48); ctx.stroke();
+    ctx.fillStyle = "#e7a6b8"; ctx.beginPath(); ctx.arc(-26, -38, 2.6, 0, 7); ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.7)"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(-32, -37); ctx.lineTo(-44, -40); ctx.moveTo(-32, -35); ctx.lineTo(-44, -33); ctx.stroke();
+    ctx.fillStyle = "#a2adb9"; ctx.beginPath(); ctx.ellipse(-30, -24, 9, 6, 0, 0, 7); ctx.fill();
+    ctx.restore();
+  }
+  function drawTug(ts) {
+    var g = ctx.createLinearGradient(0, 0, 0, MH); g.addColorStop(0, C["wall"]); g.addColorStop(1, C["wall-low"]);
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, MH); camX = 0; drawWindows();
+    ctx.fillStyle = "#f1f1ee"; ctx.fillRect(0, 286, W, 14); ctx.fillStyle = "rgba(0,0,0,0.1)"; ctx.fillRect(0, 286, W, 1.5); drawPlat(plats[0]);
+    var dx = 150 + tgM * 60, cx = 500 + tgM * 60, mouth = dx + 33, paw = cx - 38, y = 270, kx = (mouth + paw) / 2;
+    var pull = tgPull > 0 ? 3 : 0;
+    ctx.strokeStyle = "#b08a52"; ctx.lineWidth = 7; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(mouth, y); ctx.quadraticCurveTo(kx, y + 8 - pull, paw, y); ctx.stroke();
+    ctx.strokeStyle = "#d9b676"; ctx.lineWidth = 2.5; ctx.setLineDash([6, 8]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = "#c0392b"; ctx.beginPath(); ctx.arc(kx, y + 4, 8, 0, 7); ctx.fill();
+    ctx.strokeStyle = "rgba(0,0,0,0.25)"; ctx.setLineDash([4, 5]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(320, 150); ctx.lineTo(320, 300); ctx.stroke(); ctx.setLineDash([]);
+    drawCat(cx, 300, 0.08 + Math.sin(ts / 90) * (tgSurge > 0 ? 0.04 : 0.01), ts);
+    var b = { x: dx, y: 282, vx: 0, vy: 0, ground: true, ph: ts / 60, face: 1, sq: 0 };
+    ctx.fillStyle = "rgba(0,0,0,0.2)"; ctx.beginPath(); ctx.ellipse(dx, 300, R * 1.2, 3, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.save(); ctx.translate(dx, 300); ctx.rotate(-0.16 - (tgPull > 0 ? 0.05 : 0)); ctx.translate(-dx, -300);
+    ctx.translate(b.x, b.y + R); ctx.translate(0, -R); drawDog(b, ts); ctx.restore();
+    ctx.fillStyle = "rgba(0,0,0,0.25)"; rr(150, 16, 340, 12, 6); ctx.fill(); ctx.fillStyle = "#5fd8b4"; rr(150, 16, 340 * (tgM + 1) / 2, 12, 6); ctx.fill();
+  }
+
+  function mgHud() {
+    var a = "", b = "";
+    if (game === "plat") { a = "🍔 " + got + "/12"; b = elapsed.toFixed(1) + "s"; }
+    else if (game === "catch") { a = "⭐ " + Math.max(0, score); b = Math.max(0, tLeft).toFixed(1) + "s"; }
+    else if (game === "run") { a = "🍔 " + got + " · ♥ " + Math.max(0, runLives); b = Math.max(0, tLeft).toFixed(1) + "s"; }
+    else if (game === "mem") { a = "Pares " + memPairs + "/6"; b = Math.max(0, tLeft).toFixed(1) + "s"; }
+    else if (game === "tug") { a = "Força " + Math.round((tgM + 1) * 50) + "%"; b = Math.max(0, tLeft).toFixed(1) + "s"; }
+    $("mgScore").textContent = a; $("mgTime").textContent = b;
+  }
+  function mgOverlay(t, p, btn, show) { $("mgovT").textContent = t; $("mgovP").textContent = p; $("mgGo").textContent = btn; $("mgov").hidden = !show; }
+  function dogObj() { return { x: 60, y: 282, vx: 0, vy: 0, ground: true, sq: 0, ph: 0, face: 1 }; }
+  var PADS = { plat: { left: 1, right: 1, jump: 1 }, catch: { left: 1, right: 1 }, run: { jump: 1 }, mem: {}, tug: { jump: 1 } };
+  function mgReset(id) {
+    camX = 0; ball = dogObj(); coins = []; items = []; got = 0; score = 0; elapsed = 0; tLeft = id === "run" ? 40 : id === "mem" ? 60 : id === "tug" ? 25 : 30;
+    runLives = 3; runInv = 0; runGap = 120; tgM = 0; tgSurge = 0; tgNext = 100; tgPull = 0; shake = 0; jumpBuf = 0; coyote = 0; jumpHeld = false;
+    if (id === "run") { ball.x = 110; ball.vx = 2.6; }
+    if (id === "catch") ball.x = W / 2;
+    if (id === "mem") memInit();
+  }
+  function mgOpen(id) {
+    if (!P || mgLeft(id) <= 0) return;
+    poke(); game = id; state = "ready"; counted = false; closePanel(); mgEl.hidden = false;
+    $("mgTitle").textContent = MG_GAMES.filter(function (g) { return g.id === id; })[0].name;
+    document.querySelectorAll("#mgpad button").forEach(function (b) { b.hidden = !PADS[id][b.getAttribute("data-k")]; });
+    $("mgpad").hidden = id === "mem"; $("mgjump").textContent = id === "tug" ? "Puxar!" : "Pular";
+    mgReset(id); mgHud();
+    mgOverlay(MG_GAMES.filter(function (g) { return g.id === id; })[0].name, MG_INFO[id] + " Jogadas hoje: " + mgLeft(id) + ". Esta só conta quando você aperta Jogar.", "Jogar", true);
+    lastTs = 0; acc = 0; cancelAnimationFrame(mgRaf); mgRaf = requestAnimationFrame(mgLoop);
+  }
+  function mgBegin() {
+    var s = mgState(); if ((s.n[game] || 0) >= MG_LIMIT) s.extra = Math.max(0, (s.extra || 0) - 1); else s.n[game] = (s.n[game] || 0) + 1;
+    counted = true; P.mgPlays++; save();
+    keys.left = keys.right = keys.jump = false; mgReset(game); t0 = performance.now(); acc = 0;
+    if (game === "plat") coins = coinPos.map(function (p) { return { x: p.x === undefined ? p[0] : p.x, y: p[1], got: false }; });
+    state = "play"; mgOverlay("", "", "", false); mgHud(); if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  }
+  function finishPlat(won) {
+    if (state !== "play") return; state = "done";
+    var t = elapsed, tb = won ? 6 + Math.max(0, Math.min(6, Math.round((60 - t) / 5))) : 0, xp = Math.round(got * 1.5) + tb;
+    mgSettle("plat", got, xp, Math.min(36, got * 2 + (won ? 2 + tb : 0)), won ? "Você chegou! " + got + " de 12 hambúrgueres em " + t.toFixed(1) + "s." : "Parou no meio. " + got + " de 12 hambúrgueres.");
+  }
+  function finishCatch() {
+    if (state !== "play") return; state = "done";
+    var sc = Math.max(0, score); mgSettle("catch", sc, Math.min(30, Math.round(sc * 1.5)), Math.min(40, Math.round(sc * 1.5)), "Tempo esgotado! " + sc + " pontos.");
+  }
+  function finishRun() {
+    if (state !== "play") return; state = "done";
+    var sc = Math.max(0, score); mgSettle("run", sc, Math.min(30, Math.round(sc * 0.45)), Math.min(40, Math.round(sc * 0.55)), (runLives <= 0 ? "Bateu demais! " : "Fim da corrida! ") + sc + " pontos, " + got + " hambúrgueres.");
+  }
+  function finishMem(won) {
+    if (state !== "play") return; state = "done";
+    var sc = Math.max(0, memPairs * 6 + (won ? Math.round(tLeft / 2) : 0) - memMiss);
+    mgSettle("mem", sc, Math.min(30, Math.round(sc * 0.45)), Math.min(40, Math.round(sc * 0.6)), (won ? "Todos os pares em " + elapsed.toFixed(1) + "s! " : "Tempo esgotado: " + memPairs + " de 6 pares. ") + sc + " pontos.");
+  }
+  function finishTug(won) {
+    if (state !== "play") return; state = "done";
+    var sc = won ? 20 + Math.round(tLeft) : Math.round((tgM + 1) * 8);
+    mgSettle("tug", sc, Math.min(30, Math.round(sc * 0.65)), Math.min(40, Math.round(sc * 0.85)), (won ? "Você venceu o gatinho! " : "O gatinho levou a melhor. ") + sc + " pontos.");
+  }
+  function mgSettle(id, sc, xp, oss, txt) {
+    var rec = sc > (P.mgBest[id] || 0); if (rec) P.mgBest[id] = sc;
+    var s = mgState(), lucky = "";
+    if (oss > 0 && (P.inv.lucky || 0) > 0) { P.inv.lucky--; oss *= 2; lucky = " (dobrado pelo biscoito da sorte)"; }
+    var give = Math.max(0, Math.min(oss, MG_COIN_CAP - (s.coins || 0))); s.coins = (s.coins || 0) + give;
+    var xpAsk = xp; xp = Math.max(0, Math.min(xp, MG_XP_CAP - (s.xp || 0))); s.xp = (s.xp || 0) + xp;
+    P.lastPlay = Date.now(); st.joy = clamp(st.joy + 10, 0, 100); st.hunger = clamp(st.hunger - 4, 0, 100); st.eng = clamp(st.eng - 6, 10, 100); st.hyg = clamp(st.hyg - 3, 5, 100);
+    logEv("play", MG_GAMES.filter(function (g) { return g.id === id; })[0].name + ": " + sc + (id === "plat" ? "/12" : " pts") + " (+" + xp + " XP)");
+    addXP(xp); if (give > 0) addCoins(give, "minigame"); qEvent("mg", 1); checkProgress(); save(); renderAll();
+    var left = mgLeft(id);
+    mgOverlay(rec && sc > 0 ? "Novo recorde!" : "Fim de jogo", txt + " +" + xp + " XP, +" + give + " ossos" + lucky + (give < oss || xp < xpAsk ? " (limite diário atingido)" : "") + ". " + (left > 0 ? "Restam " + left + " jogadas hoje." : "Acabaram as jogadas de hoje."), left > 0 ? "Jogar de novo" : "Voltar", true);
+    mgEl.setAttribute("data-over", left > 0 ? "again" : "exit"); mgHud();
+  }
+  function mgClose() {
+    if (state === "play") { if (game === "plat") finishPlat(false); else if (game === "catch") finishCatch(); else if (game === "run") finishRun(); else if (game === "mem") finishMem(false); else if (game === "tug") finishTug(false); }
+    state = "off"; mgEl.hidden = true; cancelAnimationFrame(mgRaf); keys.left = keys.right = keys.jump = false; jumpHeld = false;
+    if (P) { renderGames(); updateBadges(); }
+  }
+  var STEPS = { plat: function () { step(); elapsed = (performance.now() - t0) / 1000; }, catch: stepCatch, run: stepRun, mem: stepMem, tug: stepTug };
+  var DRAWS = { plat: draw, catch: drawCatch, run: drawRun, mem: drawMem, tug: drawTug };
   function mgLoop(ts) {
     if (mgEl.hidden) return;
     var dt = Math.min(50, ts - (lastTs || ts)); lastTs = ts;
     if (state === "play") {
       acc += dt;
-      while (acc >= 16.67) {
-        if (game === "plat") { step(); elapsed = (performance.now() - t0) / 1000; } else stepCatch();
-        acc -= 16.67; if (state !== "play") break;
-      }
+      while (acc >= 16.67) { STEPS[game](); acc -= 16.67; if (state !== "play") break; }
       mgHud();
     }
-    if (game === "plat") draw(ts); else drawCatch(ts);
+    DRAWS[game](ts);
     mgRaf = requestAnimationFrame(mgLoop);
   }
   function press(k, down) {
@@ -1680,6 +2001,12 @@ function draw(ts) {
     ["pointerup", "pointercancel", "lostpointercapture"].forEach(function (ev) { btn.addEventListener(ev, function () { btn.classList.remove("on"); press(k, false); }); });
     btn.addEventListener("contextmenu", function (e) { e.preventDefault(); });
   });
+  cv.addEventListener("pointerdown", function (e) {
+    if (state !== "play") return;
+    if (game === "mem") { var r = cv.getBoundingClientRect(); memTap((e.clientX - r.left) * W / r.width, (e.clientY - r.top) * MH / r.height); }
+    else if (game === "run" || game === "tug") press("jump", true);
+  });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(function (ev) { cv.addEventListener(ev, function () { if (game === "run" || game === "tug") press("jump", false); }); });
   $("mgGo").addEventListener("click", function () {
     if (state === "ready") mgBegin();
     else if (state === "done") { if (mgEl.getAttribute("data-over") === "again") { var g = game; mgClose(); mgOpen(g); mgBegin(); } else mgClose(); }
@@ -1701,7 +2028,7 @@ function draw(ts) {
 <button type="button" id="pwaBtn" hidden style="position:fixed;right:10px;bottom:10px;z-index:99;padding:9px 14px;border:0;border-radius:14px;background:#2f9d7f;color:#fff;font:700 0.85rem Nunito,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3)" onclick="if(__ip){__ip.prompt();__ip=null;this.hidden=true}">Instalar app</button>
 <script>
 if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
-window.__BUILD = "1791621958";
+window.__BUILD = "1791622508";
 (function () {
   function banner() {
     if (document.getElementById("updBtn")) return;
