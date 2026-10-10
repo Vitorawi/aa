@@ -408,6 +408,7 @@ button.item .ic svg { width: 42px; height: 42px; }
         </g>
         <rect id="winDark" x="0" y="60" width="300" height="440" fill="#141c4a" style="mix-blend-mode:multiply" opacity="0" pointer-events="none"/>
         <rect id="todRect" x="0" y="0" width="896" height="1195" fill="#fff" style="mix-blend-mode:multiply" pointer-events="none"/>
+        <circle id="fireBig" cx="930" cy="720" r="620" fill="url(#fireG)" style="mix-blend-mode:screen" opacity="0" pointer-events="none"/>
         <rect id="nightRect" x="0" y="0" width="896" height="1195" fill="#0a0f2a" opacity="0" pointer-events="none"/>
         <g id="parts"></g>
       </svg>
@@ -843,7 +844,7 @@ button.item .ic svg { width: 42px; height: 42px; }
   var bTreat = $("bTreat"), bPet = $("bPet"), bPlay = $("bPlay");
 
   /* ---------- helpers ---------- */
-  var TOD_KEYS = [[0, [74, 90, 154], 1], [5, [74, 90, 154], 1], [6.5, [255, 207, 184], 0.4], [8, [255, 255, 255], 0], [16, [255, 255, 255], 0], [17.5, [255, 227, 176], 0.12], [19, [232, 160, 168], 0.5], [20.5, [74, 90, 154], 1], [24, [74, 90, 154], 1]];
+  var TOD_KEYS = [[0, [128, 112, 150], 1], [5, [128, 112, 150], 1], [6.5, [255, 207, 184], 0.4], [8, [255, 255, 255], 0], [16, [255, 255, 255], 0], [17.5, [255, 227, 176], 0.12], [19, [232, 160, 168], 0.5], [20.5, [128, 112, 150], 1], [24, [128, 112, 150], 1]];
   function hourNow() {
     var q = null; try { q = new URLSearchParams(location.search).get("hora"); } catch (x) {}
     if (q !== null && q !== "" && !isNaN(parseFloat(q))) return ((parseFloat(q) % 24) + 24) % 24;
@@ -1235,8 +1236,9 @@ button.item .ic svg { width: 42px; height: 42px; }
     // ambiente: lareira, velas, janela, poeira
     var fl = 0.3 + 0.1 * Math.sin(t * 11) + 0.07 * Math.sin(t * 19 + 2) + 0.05 * Math.sin(t * 3.1);
     var lb = 1 + tod.n * 1.6;
-    if (todSet !== tod.rgb) { todSet = tod.rgb; $("todRect").setAttribute("fill", tod.rgb); $("winDark").setAttribute("opacity", (tod.n * 0.7).toFixed(2)); }
+    if (todSet !== tod.rgb) { todSet = tod.rgb; $("todRect").setAttribute("fill", tod.rgb); $("winDark").setAttribute("opacity", (tod.n * 0.55).toFixed(2)); }
     $("fire").setAttribute("opacity", Math.min(0.95, fl * lb).toFixed(3));
+    $("fireBig").setAttribute("opacity", (tod.n * (0.8 + 1.0 * (fl - 0.3))).toFixed(3));
     $("candle1").setAttribute("opacity", Math.min(0.95, (0.4 + 0.15 * Math.sin(t * 17) + 0.08 * Math.sin(t * 9)) * lb).toFixed(3));
     $("candle2").setAttribute("opacity", Math.min(0.95, (0.4 + 0.15 * Math.sin(t * 15 + 1) + 0.08 * Math.sin(t * 8)) * lb).toFixed(3));
     $("winLight").setAttribute("opacity", ((0.12 + 0.06 * Math.sin(t * 0.6)) * (1 - tod.n * 0.9)).toFixed(3));
@@ -1700,7 +1702,7 @@ function draw(ts) {
 <button type="button" id="pwaBtn" hidden style="position:fixed;right:10px;bottom:10px;z-index:99;padding:9px 14px;border:0;border-radius:14px;background:#2f9d7f;color:#fff;font:700 0.85rem Nunito,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3)" onclick="if(__ip){__ip.prompt();__ip=null;this.hidden=true}">Instalar app</button>
 <script>
 if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
-window.__BUILD = "1791621763";
+window.__BUILD = "1791621807";
 (function () {
   function banner() {
     if (document.getElementById("updBtn")) return;
