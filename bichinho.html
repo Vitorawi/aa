@@ -406,6 +406,8 @@ button.item .ic svg { width: 42px; height: 42px; }
           <text id="icoZz" opacity="0" x="-30" y="16" font-family="Fredoka, sans-serif" font-weight="600" font-size="50" fill="#fff" stroke="#3a2216" stroke-width="5" paint-order="stroke">Zz</text>
           <path id="icoHeart" transform="translate(0 4) scale(2.6)" d="M0 12 C -18 0 -12 -14 0 -6 C 12 -14 18 0 0 12 Z" fill="#ff5a7a" stroke="#8a1f3a" stroke-width="2" stroke-linejoin="round"/>
         </g>
+        <rect id="winDark" x="0" y="60" width="300" height="440" fill="#141c4a" style="mix-blend-mode:multiply" opacity="0" pointer-events="none"/>
+        <rect id="todRect" x="0" y="0" width="896" height="1195" fill="#fff" style="mix-blend-mode:multiply" pointer-events="none"/>
         <rect id="nightRect" x="0" y="0" width="896" height="1195" fill="#0a0f2a" opacity="0" pointer-events="none"/>
         <g id="parts"></g>
       </svg>
@@ -489,7 +491,7 @@ button.item .ic svg { width: 42px; height: 42px; }
   var STORE = "bichinho-perfis-v2";
   var HUNGER_PER_H = 20, JOY_PER_H = 12, ASK_AT = 30;   // cheio, ele volta a pedir comida em ~3,5 h
   var st = { hunger: 60, joy: 70, hyg: 80, eng: 80 };
-  var HYG_PER_H = 9, ENG_PER_H = 7, ENG_SLEEP_PS = 0.9, forcedSleep = false, sleepStartEng = 0, nightK = 0, foamK = 0, foamHtml = "";
+  var HYG_PER_H = 9, ENG_PER_H = 7, ENG_SLEEP_PS = 0.9, forcedSleep = false, sleepStartEng = 0, todSet = "", nightK = 0, foamK = 0, foamHtml = "";
   var P = null, db = { current: null, profiles: {} };
   var queue = [], lastReal = Date.now(), uiT = 0, nextAsk = 0, askStart = -9999, lightBulbs = [], delArm = null;
   var vWelcome = $("welcome"), vPicker = $("picker"), vGame = $("game");
@@ -735,7 +737,7 @@ button.item .ic svg { width: 42px; height: 42px; }
     if (!P) return;
     if (panel === "care") renderCare();
     var lv = lvOf(P.xp), base = lvBase(lv), nxt = lvBase(lv + 1), i;
-    $("dogName").textContent = P.dog; $("ownerLine").textContent = "de " + P.owner;
+    $("dogName").textContent = P.dog; $("ownerLine").textContent = "de " + P.owner + " · " + periodName(hourNow());
     document.title = P.dog + " · Bichinho Virtual";
     $("dLevel").textContent = "Nível " + lv + " · " + LV[Math.min(lv - 1, LV.length - 1)];
     $("dXpTxt").textContent = (P.xp - base) + " / " + (nxt - base) + " XP";
@@ -799,7 +801,7 @@ button.item .ic svg { width: 42px; height: 42px; }
     lastReal = Date.now();
     mode = "idle"; petUntil = 0; happyUntil = 0; boopStart = -9999; askStart = -9999; parts = []; justCaught = false;
     lastActive = now; nextAsk = now + 5000; msgUntil = 0;
-    queue = [isNew ? "Oi, " + p.owner + "! Eu me chamo " + p.dog + "!" : (el > 6 * 3600000 ? "Senti sua falta, " + p.owner + "!" : "Oi, " + p.owner + "! Que bom te ver!")];
+    queue = [isNew ? "Oi, " + p.owner + "! Eu me chamo " + p.dog + "!" : (el > 6 * 3600000 ? "Senti sua falta, " + p.owner + "!" : greet(hourNow()) + ", " + p.owner + "! Que bom te ver!")];
     closePanel(); save(); applyEquip(); showView("game"); renderPoops(); renderAll();
   }
 
@@ -841,6 +843,21 @@ button.item .ic svg { width: 42px; height: 42px; }
   var bTreat = $("bTreat"), bPet = $("bPet"), bPlay = $("bPlay");
 
   /* ---------- helpers ---------- */
+  var TOD_KEYS = [[0, [74, 90, 154], 1], [5, [74, 90, 154], 1], [6.5, [255, 207, 184], 0.4], [8, [255, 255, 255], 0], [16, [255, 255, 255], 0], [17.5, [255, 227, 176], 0.12], [19, [232, 160, 168], 0.5], [20.5, [74, 90, 154], 1], [24, [74, 90, 154], 1]];
+  function hourNow() {
+    var q = null; try { q = new URLSearchParams(location.search).get("hora"); } catch (x) {}
+    if (q !== null && q !== "" && !isNaN(parseFloat(q))) return ((parseFloat(q) % 24) + 24) % 24;
+    var d = new Date(); return d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600;
+  }
+  function todAt(h) {
+    for (var i = 1; i < TOD_KEYS.length; i++) if (h <= TOD_KEYS[i][0]) {
+      var a = TOD_KEYS[i - 1], b = TOD_KEYS[i], k = (h - a[0]) / (b[0] - a[0] || 1);
+      return { rgb: "rgb(" + [0, 1, 2].map(function (j) { return Math.round(a[1][j] + (b[1][j] - a[1][j]) * k); }).join(",") + ")", n: a[2] + (b[2] - a[2]) * k };
+    }
+    return { rgb: "rgb(255,255,255)", n: 0 };
+  }
+  function periodName(h) { return h < 5 ? "madrugada" : h < 12 ? "manhã" : h < 18 ? "tarde" : "noite"; }
+  function greet(h) { return h >= 5 && h < 12 ? "Bom dia" : h >= 12 && h < 18 ? "Boa tarde" : "Boa noite"; }
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
   function approach(cur, target, rate, dt) { return cur + (target - cur) * (1 - Math.exp(-rate * dt)); }
   function rnd(a, b) { return a + Math.random() * (b - a); }
@@ -865,6 +882,7 @@ button.item .ic svg { width: 42px; height: 42px; }
     if (st.eng < 25) return "Tô com sono…";
     if (st.joy < 30) return "Faz carinho em mim?";
     if (st.hunger > 80 && st.joy > 80) return "Tô muito feliz, " + o + "!";
+    var hh = hourNow(); if (hh >= 22 || hh < 5) return "Tô com soninho, " + o + "…";
     return "Tô te esperando, " + o + "…";
   }
   function poke() { lastActive = now; if (mode === "sleep" || mode === "yawn") { if (mode === "sleep") endSleep(); mode = "idle"; speak("Hmm? Acordei!", 1800); happyUntil = now + 700; } }
@@ -1025,10 +1043,11 @@ button.item .ic svg { width: 42px; height: 42px; }
     var sleeping = mode === "sleep";
 
     if (!P || vGame.hidden) { requestAnimationFrame(frame); return; }
+    var tod = todAt(hourNow()), isNight = tod.n > 0.8;
     var rt = Date.now(), dReal = Math.min(Math.max(0, rt - lastReal), 14 * 86400000) / 1000; lastReal = rt;
     st.hunger = clamp(st.hunger - HUNGER_PER_H / 3600 * dReal, 5, 100); st.joy = clamp(st.joy - JOY_PER_H / 3600 * dReal, 5, 100);
     st.hyg = clamp(st.hyg - (HYG_PER_H + 6 * P.poops) / 3600 * dReal, 5, 100);
-    if (mode === "sleep") st.eng = clamp(st.eng + ENG_SLEEP_PS * (forcedSleep ? 1 : 0.35) * dt, 0, 100); else st.eng = clamp(st.eng - ENG_PER_H / 3600 * dReal, 10, 100);
+    if (mode === "sleep") st.eng = clamp(st.eng + ENG_SLEEP_PS * (forcedSleep ? 1 : 0.35) * dt, 0, 100); else st.eng = clamp(st.eng - ENG_PER_H * (isNight ? 1.6 : 1) / 3600 * dReal, 10, 100);
     if (P.pend > 0 && P.poops < 3 && rt >= P.nextPoop) { P.poops++; P.pend--; P.nextPoop = rt + rnd(15, 40) * 60000; speak("Ops… fiz cocô!", 2600); renderPoops(); save(); updateBadges(); }
     if (poopShown !== P.poops || (poopDirty !== (st.hyg < 50))) renderPoops();
     uiT += dt; if (uiT > 10) { uiT = 0; renderAll(true); }
@@ -1076,7 +1095,7 @@ button.item .ic svg { width: 42px; height: 42px; }
     if (ka >= 0 && ka < 1) { var ea = Math.sin(ka * Math.PI); tOffy += -10 * ea; tRot += 0.06 * Math.sin(ka * Math.PI * 2); earL += -0.15 * ea; earR += 0.15 * ea; bounce = Math.max(bounce, 14 * Math.abs(Math.sin(ka * Math.PI * 2))); }
 
     // sono
-    if (mode === "idle" && !busy() && ((now - lastActive > 42000 && !lonely) || st.eng < 10)) { mode = "sleep"; modeStart = now; speak("Zzz…", 2000); }
+    if (mode === "idle" && !busy() && ((now - lastActive > (isNight ? 15000 : 42000) && !lonely) || st.eng < 10)) { mode = "sleep"; modeStart = now; speak("Zzz…", 2000); }
     if (forcedSleep && mode === "sleep" && st.eng >= 100) { mode = "idle"; endSleep(); happyUntil = now + 1800; speak("Acordei novinho em folha!", 2600); lastActive = now; }
     if (sleeping) {
       tRot = 0.16 + 0.01 * Math.sin(t * 1.1); tOffy = 34 + 3 * Math.sin(t * 1.1); tOffx = 0; breath = 0.012 * Math.sin(t * 1.2);
@@ -1215,10 +1234,12 @@ button.item .ic svg { width: 42px; height: 42px; }
 
     // ambiente: lareira, velas, janela, poeira
     var fl = 0.3 + 0.1 * Math.sin(t * 11) + 0.07 * Math.sin(t * 19 + 2) + 0.05 * Math.sin(t * 3.1);
-    $("fire").setAttribute("opacity", fl.toFixed(3));
-    $("candle1").setAttribute("opacity", (0.4 + 0.15 * Math.sin(t * 17) + 0.08 * Math.sin(t * 9)).toFixed(3));
-    $("candle2").setAttribute("opacity", (0.4 + 0.15 * Math.sin(t * 15 + 1) + 0.08 * Math.sin(t * 8)).toFixed(3));
-    $("winLight").setAttribute("opacity", (0.12 + 0.06 * Math.sin(t * 0.6)).toFixed(3));
+    var lb = 1 + tod.n * 1.6;
+    if (todSet !== tod.rgb) { todSet = tod.rgb; $("todRect").setAttribute("fill", tod.rgb); $("winDark").setAttribute("opacity", (tod.n * 0.7).toFixed(2)); }
+    $("fire").setAttribute("opacity", Math.min(0.95, fl * lb).toFixed(3));
+    $("candle1").setAttribute("opacity", Math.min(0.95, (0.4 + 0.15 * Math.sin(t * 17) + 0.08 * Math.sin(t * 9)) * lb).toFixed(3));
+    $("candle2").setAttribute("opacity", Math.min(0.95, (0.4 + 0.15 * Math.sin(t * 15 + 1) + 0.08 * Math.sin(t * 8)) * lb).toFixed(3));
+    $("winLight").setAttribute("opacity", ((0.12 + 0.06 * Math.sin(t * 0.6)) * (1 - tod.n * 0.9)).toFixed(3));
     motes.forEach(function (m) {
       m.x += m.sp * dt; m.y -= m.sp * 0.5 * dt; if (m.x > 430 || m.y < 100) { m.x = rnd(-20, 120); m.y = rnd(420, 780); }
       m.el.setAttribute("cx", (m.x + Math.sin(t * 0.8 + m.ph) * 10).toFixed(1)); m.el.setAttribute("cy", m.y.toFixed(1)); m.el.setAttribute("r", m.r.toFixed(1));
@@ -1679,7 +1700,7 @@ function draw(ts) {
 <button type="button" id="pwaBtn" hidden style="position:fixed;right:10px;bottom:10px;z-index:99;padding:9px 14px;border:0;border-radius:14px;background:#2f9d7f;color:#fff;font:700 0.85rem Nunito,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3)" onclick="if(__ip){__ip.prompt();__ip=null;this.hidden=true}">Instalar app</button>
 <script>
 if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
-window.__BUILD = "1791621587";
+window.__BUILD = "1791621763";
 (function () {
   function banner() {
     if (document.getElementById("updBtn")) return;
