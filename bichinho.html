@@ -217,6 +217,32 @@ button.item .ic svg { width: 42px; height: 42px; }
 .mbar i { display: block; height: 100%; background: #5fd8b4; }
 .mgpad[hidden] { display: none; }
 .sheet button.item .stt.price { color: #ffe9a8; }
+
+/* ---- interface limpa ---- */
+.top { align-items: center; }
+.topr { display: flex; align-items: center; gap: 8px; }
+.coinchip { position: static; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px 6px 9px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line); color: var(--fg); font: 600 14px Fredoka, sans-serif; backdrop-filter: none; }
+.coinchip svg { width: 18px; height: 18px; }
+.coinchip b { font-weight: 600; }
+.lvrow { width: 100%; display: flex; align-items: center; gap: 8px; margin-top: -4px; }
+.lvpill { font: 600 11px Fredoka, sans-serif; letter-spacing: .04em; padding: 3px 9px; border-radius: 99px; background: var(--accent-pet); color: #fff; white-space: nowrap; }
+.hbar { flex: 1; height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.hbar i { display: block; height: 100%; width: 0; background: var(--accent-play); transition: width .4s ease; border-radius: 99px; }
+.lvrow small { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.hud { left: 10px; right: 10px; top: 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.stat { flex-direction: row; align-items: center; gap: 6px; padding: 7px 9px; border-radius: 99px; background: rgba(28,14,12,0.5); }
+.stat svg { width: 15px; height: 15px; flex: none; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.stat .bar { flex: 1; height: 6px; }
+.dock { width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; padding: 5px; border-radius: 22px; background: var(--surface); border: 1px solid var(--line); box-sizing: border-box; }
+.dock .rbtn { position: relative; width: auto; padding: 8px 2px 6px; display: flex; flex-direction: column; align-items: center; gap: 3px; background: transparent; color: var(--muted); border: 0; border-radius: 16px; font: 700 11px Nunito, sans-serif; backdrop-filter: none; box-shadow: none; }
+.dock .rbtn svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.dock .rbtn[aria-pressed="true"] { background: var(--bg); color: var(--accent-pet); border: 0; }
+.dock .rbtn .dot { top: 4px; right: calc(50% - 22px); width: 11px; height: 11px; border: 2px solid var(--surface); }
+.stabs { display: flex; gap: 4px; padding: 3px; border-radius: 12px; background: rgba(255,255,255,0.1); }
+.stabs button { flex: 1; position: relative; padding: 7px 4px; border-radius: 9px; background: transparent; color: rgba(255,255,255,0.78); box-shadow: none; font-size: 0.82rem; }
+.stabs button.on { background: rgba(255,255,255,0.92); color: #2a1d22; }
+.stabs .dot { position: absolute; top: 3px; right: 8px; width: 9px; height: 9px; border-radius: 50%; background: #ff3d6b; border: 1.5px solid #fff; }
+.hint { font-size: 12px; }
 </style>
 
 <style>body { margin: 0; }</style>
@@ -244,8 +270,12 @@ button.item .ic svg { width: 42px; height: 42px; }
   <div id="game" hidden>
   <div class="top">
     <div class="who"><h1 id="dogName">Bichinho</h1><span class="sub" id="ownerLine"></span></div>
-    <button id="bProfiles" type="button" class="small">Perfis</button>
+    <div class="topr">
+      <div class="coinchip" id="coinChip" aria-label="Seus ossos"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#ffd54a" stroke="#b8860b" stroke-width="1.6"/><path d="M8.2 15.2l7.2-6.4" stroke="#8a5a00" stroke-width="2.2" stroke-linecap="round"/><circle cx="7.8" cy="15.6" r="1.8" fill="#8a5a00"/><circle cx="16" cy="8.4" r="1.8" fill="#8a5a00"/></svg><b id="coinN">0</b></div>
+      <button id="bProfiles" type="button" class="small">Perfis</button>
+    </div>
   </div>
+  <div class="lvrow"><span class="lvpill" id="hLv">Nv 1</span><div class="hbar"><i id="hXp"></i></div><small id="hXpTxt"></small></div>
   <div class="device">
     <div class="screen" id="screen" aria-label="Seu cachorrinho olhando para a tela">
       <svg class="layer" id="stage" viewBox="0 0 896 1195" role="img" aria-label="Cachorrinho yorkshire sentado numa sala aconchegante, de gravata borboleta vermelha">
@@ -424,22 +454,12 @@ button.item .ic svg { width: 42px; height: 42px; }
         <g id="parts"></g>
       </svg>
       <div class="hud">
-        <div class="stat"><span>Barriguinha</span><div class="bar"><i id="fHunger"></i></div></div>
-        <div class="stat"><span>Carinho</span><div class="bar"><i id="fJoy"></i></div></div>
-        <div class="stat"><span>Banho</span><div class="bar"><i id="fHyg"></i></div></div>
-        <div class="stat"><span>Energia</span><div class="bar"><i id="fEng"></i></div></div>
+        <div class="stat" title="Barriguinha" role="img" aria-label="Barriguinha"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18a8 8 0 0 1-8 8h-2a8 8 0 0 1-8-8z"/><path d="M9 8c0-1.6 1.6-1.6 1.6-3.2M14 8c0-1.6 1.6-1.6 1.6-3.2"/></svg><div class="bar"><i id="fHunger"></i></div></div>
+        <div class="stat" title="Carinho" role="img" aria-label="Carinho"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.5 2.4C19.5 15.4 12 20 12 20z"/></svg><div class="bar"><i id="fJoy"></i></div></div>
+        <div class="stat" title="Banho" role="img" aria-label="Banho"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s6 6.2 6 10.2A6 6 0 0 1 6 13.2C6 9.2 12 3 12 3z"/></svg><div class="bar"><i id="fHyg"></i></div></div>
+        <div class="stat" title="Energia" role="img" aria-label="Energia"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L5 14h6l-1 8 8-12h-6z"/></svg><div class="bar"><i id="fEng"></i></div></div>
       </div>
-      <div class="coinchip" id="coinChip" aria-label="Seus ossos">🦴 <b id="coinN">0</b></div>
       <div class="pvtag" id="pvTag" hidden>Prévia</div>
-      <div class="rail" id="rail">
-        <button type="button" class="rbtn" data-p="treat" aria-label="Petiscos" aria-pressed="false"><svg viewBox="-48 -30 96 60" aria-hidden="true"><use href="#tr_bone"/></svg><span>Petiscos</span><i class="dot" hidden></i></button>
-        <button type="button" class="rbtn" data-p="wear" aria-label="Roupinhas" aria-pressed="false"><svg viewBox="-70 -170 140 180" aria-hidden="true"><use href="#hat_party"/></svg><span>Roupas</span><i class="dot" hidden></i></button>
-        <button type="button" class="rbtn" data-p="room" aria-label="Quarto" aria-pressed="false"><svg viewBox="-130 -60 260 120" aria-hidden="true"><use href="#room_bed"/></svg><span>Quarto</span><i class="dot" hidden></i></button>
-        <button type="button" class="rbtn" data-p="games" aria-label="Minigames" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="5.5" fill="#7ee8c4"/><path d="M7 9.5v6M4 12.5h6" stroke="#18433a" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="11.5" r="1.5" fill="#18433a"/><circle cx="19" cy="14" r="1.5" fill="#18433a"/></svg><span>Jogos</span></button>
-        <button type="button" class="rbtn" data-p="care" aria-label="Cuidados" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="14" r="6" fill="#dff4ff" stroke="#5aa9d6" stroke-width="1.8"/><circle cx="16.5" cy="8" r="4" fill="#dff4ff" stroke="#5aa9d6" stroke-width="1.8"/><circle cx="17" cy="17" r="2.4" fill="#dff4ff" stroke="#5aa9d6" stroke-width="1.5"/></svg><span>Cuidar</span><i class="dot" hidden></i></button>
-        <button type="button" class="rbtn" data-p="shop" aria-label="Loja e missões" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="#ffd54a" stroke="#b8860b" stroke-width="2"/><path d="M8.5 15l7-6" stroke="#8a5a00" stroke-width="2.2" stroke-linecap="round"/><circle cx="8" cy="15.4" r="1.7" fill="#8a5a00"/><circle cx="16" cy="8.6" r="1.7" fill="#8a5a00"/></svg><span>Loja</span><i class="dot" hidden></i></button>
-        <button type="button" class="rbtn" data-p="diary" aria-label="Diário e conquistas" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8-6.1-3.4-6.1 3.4 1.4-6.8L2.2 9.1l6.9-.8z" fill="#ffd54a" stroke="#7a5a00" stroke-width="1.5" stroke-linejoin="round"/></svg><span>Diário</span></button>
-      </div>
       
       <div class="mg" id="mg" hidden>
         <div class="mgbar"><b id="mgTitle"></b><span id="mgScore"></span><span id="mgTime"></span><button type="button" class="sx" id="mgQuit" aria-label="Sair do minigame">×</button></div>
@@ -449,6 +469,7 @@ button.item .ic svg { width: 42px; height: 42px; }
       </div>
       <div class="sheet" id="sheet" hidden>
         <div class="shead"><b id="sTitle">Armário</b><button type="button" class="sx" id="sClose" aria-label="Fechar painel">×</button></div>
+        <div class="stabs" id="sTabs" hidden><button type="button" data-t="treat">Petiscos<i class="dot" hidden></i></button><button type="button" data-t="wear">Roupas<i class="dot" hidden></i></button><button type="button" data-t="room">Quarto<i class="dot" hidden></i></button></div>
         <p class="shint" id="sHint">Toque para usar. Toque de novo para tirar.</p>
         <div class="sbody" id="closet"></div>
         <div class="sgames" id="sGames" hidden></div>
@@ -494,7 +515,14 @@ button.item .ic svg { width: 42px; height: 42px; }
       Brincar
     </button>
   </div>
-  <p class="hint">Passe o dedo na cabeça dele, cutuque o focinho ou deixe ele sozinho um tempinho.</p>
+  <nav class="dock" id="rail" aria-label="Menu do jogo">
+    <button type="button" class="rbtn" data-p="wear" aria-label="Armário" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3L3 6l2 4 3-1v11h8V9l3 1 2-4-5-3a4 4 0 0 1-8 0z"/></svg><span>Armário</span><i class="dot" hidden></i></button>
+    <button type="button" class="rbtn" data-p="care" aria-label="Cuidar" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s6 6.2 6 10.2A6 6 0 0 1 6 13.2C6 9.2 12 3 12 3z"/><path d="M9.5 14a2.6 2.6 0 0 0 2.5 2.4"/></svg><span>Cuidar</span><i class="dot" hidden></i></button>
+    <button type="button" class="rbtn" data-p="games" aria-label="Jogos" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 10v5M4.5 12.5h5"/><circle cx="16" cy="11.5" r="1"/><circle cx="19" cy="14" r="1"/></svg><span>Jogos</span><i class="dot" hidden></i></button>
+    <button type="button" class="rbtn" data-p="shop" aria-label="Loja e missões" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg><span>Loja</span><i class="dot" hidden></i></button>
+    <button type="button" class="rbtn" data-p="diary" aria-label="Diário e conquistas" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z"/><path d="M8 17h11M9 8h6"/></svg><span>Diário</span><i class="dot" hidden></i></button>
+  </nav>
+  <p class="hint" id="hint">Passe o dedo na cabeça dele, cutuque o focinho ou deixe ele sozinho um tempinho.</p>
   </div>
 </div>
 
@@ -728,9 +756,10 @@ button.item .ic svg { width: 42px; height: 42px; }
     var sd = document.querySelector('.rbtn[data-p="shop"] .dot');
     if (sd) { var rdy = false; [P.q, P.wq].forEach(function (L) { if (L) L.list.forEach(function (q) { if (!q.c && q.p >= q.g) rdy = true; }); }); sd.hidden = !rdy; }
     var cd = document.querySelector('.rbtn[data-p="care"] .dot'); if (cd) cd.hidden = !(P.poops > 0 || st.hyg < 30 || st.eng < 25);
+    var wd0 = document.querySelector('.rbtn[data-p="wear"] .dot'); if (wd0) wd0.hidden = true;
     ["treat", "wear", "room"].forEach(function (g) {
       var has = false; ITEMS.forEach(function (it) { if (inGroup(it, g) && P.unlocked.indexOf(it.id) >= 0 && P.seen.indexOf(it.id) < 0) has = true; });
-      var d = document.querySelector('.rbtn[data-p="' + g + '"] .dot'); if (d) d.hidden = !has;
+      var d = document.querySelector('#sTabs [data-t="' + g + '"] .dot'); if (d) d.hidden = !has; if (has && wd0) wd0.hidden = false;
     });
   }
   function renderCloset() {
@@ -754,8 +783,10 @@ button.item .ic svg { width: 42px; height: 42px; }
     if (!P) return;
     if (panel === p) { closePanel(); return; }
     PV = null; applyEquip(); panel = p; $("rail").classList.add("compact"); var sh = $("sheet"); sh.className = "sheet" + (p === "diary" || p === "games" || p === "shop" ? " tall" : ""); sh.hidden = false;
-    $("sTitle").textContent = PANELS[p]; $("closet").hidden = p === "diary" || p === "games" || p === "care" || p === "shop"; $("sCare").hidden = p !== "care"; $("sShop").hidden = p !== "shop"; $("sDiary").hidden = p !== "diary"; $("sGames").hidden = p !== "games"; $("sHint").hidden = p !== "treat";
-    document.querySelectorAll(".rbtn").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-p") === p ? "true" : "false"); });
+    $("sTitle").textContent = PANELS[p];
+    var cl = p === "treat" || p === "wear" || p === "room"; $("sTabs").hidden = !cl; if (cl) $("sTitle").textContent = "Armário";
+    document.querySelectorAll("#sTabs button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-t") === p); }); $("closet").hidden = p === "diary" || p === "games" || p === "care" || p === "shop"; $("sCare").hidden = p !== "care"; $("sShop").hidden = p !== "shop"; $("sDiary").hidden = p !== "diary"; $("sGames").hidden = p !== "games"; $("sHint").hidden = p !== "treat";
+    document.querySelectorAll(".rbtn").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-p") === (p === "treat" || p === "room" ? "wear" : p) ? "true" : "false"); });
     if (p === "diary") renderAll(true); else if (p === "games") renderGames(); else if (p === "care") renderCare(); else if (p === "shop") renderShop(); else { $("closet").scrollLeft = 0; renderCloset(); }
     renderAct();
   }
@@ -771,6 +802,8 @@ button.item .ic svg { width: 42px; height: 42px; }
     if (panel === "care") renderCare();
     if (panel === "shop") renderShop();
     var lv = lvOf(P.xp), base = lvBase(lv), nxt = lvBase(lv + 1), i;
+    $("hLv").textContent = "Nv " + lv; $("hXp").style.width = clamp((P.xp - base) / (nxt - base) * 100, 0, 100).toFixed(0) + "%"; $("hXpTxt").textContent = (P.xp - base) + "/" + (nxt - base) + " XP";
+    $("hint").hidden = ((P.feeds || 0) + (P.pets || 0)) >= 3;
     $("dogName").textContent = P.dog; $("ownerLine").textContent = "de " + P.owner + " · " + periodName(hourNow());
     document.title = P.dog + " · Bichinho Virtual";
     $("dLevel").textContent = "Nível " + lv + " · " + LV[Math.min(lv - 1, LV.length - 1)];
@@ -858,7 +891,12 @@ button.item .ic svg { width: 42px; height: 42px; }
       else { delArm = id; renderPicker(); }
     }
   });
-  $("rail").addEventListener("click", function (ev) { var b = ev.target.closest ? ev.target.closest(".rbtn") : null; if (b) openPanel(b.getAttribute("data-p")); });
+  $("rail").addEventListener("click", function (ev) {
+    var b = ev.target.closest ? ev.target.closest(".rbtn") : null; if (!b) return; var p = b.getAttribute("data-p");
+    if (p === "wear" && (panel === "treat" || panel === "room")) { closePanel(); return; }
+    openPanel(p);
+  });
+  $("sTabs").addEventListener("click", function (ev) { var b = ev.target.closest ? ev.target.closest("button") : null; if (b && b.getAttribute("data-t") !== panel) openPanel(b.getAttribute("data-t")); });
   $("sClose").addEventListener("click", closePanel);
   window.addEventListener("resize", function () { if (panel) applyZoom(); });
   $("sActBtn").addEventListener("click", commitPV);
@@ -2028,7 +2066,7 @@ function draw(ts) {
 <button type="button" id="pwaBtn" hidden style="position:fixed;right:10px;bottom:10px;z-index:99;padding:9px 14px;border:0;border-radius:14px;background:#2f9d7f;color:#fff;font:700 0.85rem Nunito,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3)" onclick="if(__ip){__ip.prompt();__ip=null;this.hidden=true}">Instalar app</button>
 <script>
 if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
-window.__BUILD = "1791622508";
+window.__BUILD = "1791623249";
 (function () {
   function banner() {
     if (document.getElementById("updBtn")) return;
