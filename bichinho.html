@@ -210,6 +210,19 @@ button.item .ic svg { width: 42px; height: 42px; }
 .coinchip b { font-weight: 600; }
 .coinchip.pop { animation: cpop .5s ease-out; }
 @keyframes cpop { 0% { transform: scale(1); } 40% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
+.hbank { background: rgba(255,255,255,0.1); border-radius: 14px; padding: 12px; margin: 0 0 8px; display: flex; flex-direction: column; gap: 8px; }
+.hb-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; }
+.hb-k { display: block; font-size: 0.68rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,0.65); }
+.hb-n { font-family: Fredoka, sans-serif; font-weight: 600; font-size: 1.45rem; color: #fff; }
+.hb-r { text-align: right; } .hb-v { font-family: Fredoka, sans-serif; font-size: 1.05rem; color: #9be8cf; }
+.hb-bar { height: 9px; } .hb-note { margin: 0; font-size: 0.78rem; line-height: 1.35; color: rgba(255,255,255,0.8); }
+.sheet #hCollect, .sheet .hprest button.primary { background: #2f9d7f; color: #fff; border: 0; width: 100%; padding: 11px; font-size: 1rem; border-radius: 12px; }
+.sheet #hCollect:disabled, .sheet .hprest button.primary:disabled { background: rgba(255,255,255,0.18); color: rgba(255,255,255,0.7); }
+.hqty { display: flex; align-items: center; gap: 6px; margin: 4px 0 0; font-size: 0.78rem; color: rgba(255,255,255,0.75); }
+.hqty .chip { border: 1.5px solid rgba(255,255,255,0.3); background: transparent; color: #fff; border-radius: 99px; padding: 4px 12px; font: 700 0.8rem Nunito, sans-serif; width: auto; }
+.hqty .chip.on { background: #fff; color: #2a1d22; border-color: #fff; }
+.sheet .hlist li { grid-template-columns: 1fr; } .sheet .hlist li button { grid-column: 1; grid-row: auto !important; width: 100%; margin-top: 6px; white-space: nowrap; padding: 10px 14px; }
 .gcap { margin: 6px 0; font-size: 0.78rem; color: rgba(255,255,255,0.8); line-height: 1.3; }
 .shh { margin: 12px 0 5px; font-family: Fredoka, sans-serif; font-size: 1rem; color: #fff; display: flex; flex-direction: column; font-weight: 600; }
 .shh small { font: 600 0.72rem Nunito, sans-serif; color: rgba(255,255,255,0.7); }
@@ -233,7 +246,7 @@ button.item .ic svg { width: 42px; height: 42px; }
 .stat { flex-direction: row; align-items: center; gap: 6px; padding: 7px 9px; border-radius: 99px; background: rgba(28,14,12,0.5); }
 .stat svg { width: 15px; height: 15px; flex: none; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .stat .bar { flex: 1; height: 6px; }
-.dock { width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); gap: 2px; padding: 5px; border-radius: 22px; background: var(--surface); border: 1px solid var(--line); box-sizing: border-box; }
+.dock { width: 100%; display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; padding: 5px; border-radius: 22px; background: var(--surface); border: 1px solid var(--line); box-sizing: border-box; }
 .dock .rbtn { position: relative; width: auto; padding: 8px 2px 6px; display: flex; flex-direction: column; align-items: center; gap: 3px; background: transparent; color: var(--muted); border: 0; border-radius: 16px; font: 700 11px Nunito, sans-serif; backdrop-filter: none; box-shadow: none; }
 .dock .rbtn svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .dock .rbtn[aria-pressed="true"] { background: var(--bg); color: var(--accent-pet); border: 0; }
@@ -475,6 +488,7 @@ button.item .ic svg { width: 42px; height: 42px; }
         <div class="sgames" id="sGames" hidden></div>
         <div class="sgames" id="sCare" hidden></div>
         <div class="sgames" id="sShop" hidden></div>
+        <div class="sgames" id="sHome" hidden></div>
         <div class="sact" id="sAct" hidden><span class="sname" id="sActName"></span><button type="button" class="primary small" id="sActBtn">Vestir</button></div>
         <div class="sdiary" id="sDiary" hidden>
           <div class="lvl">
@@ -519,6 +533,7 @@ button.item .ic svg { width: 42px; height: 42px; }
     <button type="button" class="rbtn" data-p="wear" aria-label="Armário" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3L3 6l2 4 3-1v11h8V9l3 1 2-4-5-3a4 4 0 0 1-8 0z"/></svg><span>Armário</span><i class="dot" hidden></i></button>
     <button type="button" class="rbtn" data-p="care" aria-label="Cuidar" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s6 6.2 6 10.2A6 6 0 0 1 6 13.2C6 9.2 12 3 12 3z"/><path d="M9.5 14a2.6 2.6 0 0 0 2.5 2.4"/></svg><span>Cuidar</span><i class="dot" hidden></i></button>
     <button type="button" class="rbtn" data-p="games" aria-label="Jogos" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="11" rx="5.5"/><path d="M7 10v5M4.5 12.5h5"/><circle cx="16" cy="11.5" r="1"/><circle cx="19" cy="14" r="1"/></svg><span>Jogos</span><i class="dot" hidden></i></button>
+    <button type="button" class="rbtn" data-p="home" aria-label="Casinha" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/><path d="M10 20v-5h4v5"/></svg><span>Casinha</span><i class="dot" hidden></i></button>
     <button type="button" class="rbtn" data-p="shop" aria-label="Loja e missões" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg><span>Loja</span><i class="dot" hidden></i></button>
     <button type="button" class="rbtn" data-p="diary" aria-label="Diário e conquistas" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z"/><path d="M8 17h11M9 8h6"/></svg><span>Diário</span><i class="dot" hidden></i></button>
   </nav>
@@ -718,7 +733,7 @@ button.item .ic svg { width: 42px; height: 42px; }
   }
   function renderAct() {
     var box = $("sAct"), tag = $("pvTag"), btn = $("sActBtn"), nm = $("sActName");
-    if (!P || !panel || panel === "diary" || (panel === "treat" && !PV) || panel === "games" || panel === "care" || panel === "shop") { box.hidden = true; tag.hidden = true; return; }
+    if (!P || !panel || panel === "diary" || (panel === "treat" && !PV) || panel === "games" || panel === "care" || panel === "shop" || panel === "home") { box.hidden = true; tag.hidden = true; return; }
     box.hidden = false;
     if (!PV) { nm.textContent = "Toque num item para ver como fica nele"; nm.className = "sname hintx"; btn.hidden = true; tag.hidden = true; applyZoom(); return; }
     var it = itemById(PV), un = P.unlocked.indexOf(PV) >= 0, on = un && equipped(it), av = !un && it.price != null && reqMet(it), can = av && (P.coins || 0) >= it.price;
@@ -749,13 +764,14 @@ button.item .ic svg { width: 42px; height: 42px; }
     if (it.slot === "head" || it.slot === "face" || it.slot === "body") { happyUntil = now + 900; if (equipped(it)) speak("Fiquei bonito?", 1800); }
     if (it.slot === "treat") speak("Hmm, " + it.name.toLowerCase() + "!", 1800);
   }
-  var panel = null, PANELS = { treat: "Petiscos", wear: "Roupinhas", room: "Quarto", diary: "Diário e conquistas", games: "Minigames", care: "Cuidados", shop: "Loja e missões" };
+  var panel = null, PANELS = { treat: "Petiscos", wear: "Roupinhas", room: "Quarto", diary: "Diário e conquistas", games: "Minigames", care: "Cuidados", shop: "Loja e missões", home: "Casinha" };
   function inGroup(it, g) { return g === "wear" ? (it.slot === "head" || it.slot === "face" || it.slot === "body") : it.slot === g; }
   function updateBadges() {
     if (!P) return;
     var sd = document.querySelector('.rbtn[data-p="shop"] .dot');
     if (sd) { var rdy = false; [P.q, P.wq].forEach(function (L) { if (L) L.list.forEach(function (q) { if (!q.c && q.p >= q.g) rdy = true; }); }); sd.hidden = !rdy; }
     var cd = document.querySelector('.rbtn[data-p="care"] .dot'); if (cd) cd.hidden = !(P.poops > 0 || st.hyg < 30 || st.eng < 25);
+    hBadge();
     var wd0 = document.querySelector('.rbtn[data-p="wear"] .dot'); if (wd0) wd0.hidden = true;
     ["treat", "wear", "room"].forEach(function (g) {
       var has = false; ITEMS.forEach(function (it) { if (inGroup(it, g) && P.unlocked.indexOf(it.id) >= 0 && P.seen.indexOf(it.id) < 0) has = true; });
@@ -763,7 +779,7 @@ button.item .ic svg { width: 42px; height: 42px; }
     });
   }
   function renderCloset() {
-    if (!P || !panel || panel === "diary" || panel === "games" || panel === "care" || panel === "shop") return;
+    if (!P || !panel || panel === "diary" || panel === "games" || panel === "care" || panel === "shop" || panel === "home") return;
     var svgNS = "http://www.w3.org/2000/svg", box = $("closet"), keep = box.scrollLeft; box.innerHTML = "";
     var ul = document.createElement("ul"); ul.className = "items";
     ITEMS.filter(function (it) { return inGroup(it, panel); }).forEach(function (it) {
@@ -782,12 +798,12 @@ button.item .ic svg { width: 42px; height: 42px; }
   function openPanel(p) {
     if (!P) return;
     if (panel === p) { closePanel(); return; }
-    PV = null; applyEquip(); panel = p; $("rail").classList.add("compact"); var sh = $("sheet"); sh.className = "sheet" + (p === "diary" || p === "games" || p === "shop" ? " tall" : ""); sh.hidden = false;
+    PV = null; applyEquip(); panel = p; $("rail").classList.add("compact"); var sh = $("sheet"); sh.className = "sheet" + (p === "diary" || p === "games" || p === "shop" || p === "home" ? " tall" : ""); sh.hidden = false;
     $("sTitle").textContent = PANELS[p];
     var cl = p === "treat" || p === "wear" || p === "room"; $("sTabs").hidden = !cl; if (cl) $("sTitle").textContent = "Armário";
-    document.querySelectorAll("#sTabs button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-t") === p); }); $("closet").hidden = p === "diary" || p === "games" || p === "care" || p === "shop"; $("sCare").hidden = p !== "care"; $("sShop").hidden = p !== "shop"; $("sDiary").hidden = p !== "diary"; $("sGames").hidden = p !== "games"; $("sHint").hidden = p !== "treat";
+    document.querySelectorAll("#sTabs button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-t") === p); }); $("closet").hidden = p === "diary" || p === "games" || p === "care" || p === "shop" || p === "home"; $("sHome").hidden = p !== "home"; $("sCare").hidden = p !== "care"; $("sShop").hidden = p !== "shop"; $("sDiary").hidden = p !== "diary"; $("sGames").hidden = p !== "games"; $("sHint").hidden = p !== "treat";
     document.querySelectorAll(".rbtn").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-p") === (p === "treat" || p === "room" ? "wear" : p) ? "true" : "false"); });
-    if (p === "diary") renderAll(true); else if (p === "games") renderGames(); else if (p === "care") renderCare(); else if (p === "shop") renderShop(); else { $("closet").scrollLeft = 0; renderCloset(); }
+    if (p === "diary") renderAll(true); else if (p === "games") renderGames(); else if (p === "care") renderCare(); else if (p === "shop") renderShop(); else if (p === "home") renderHome(); else { $("closet").scrollLeft = 0; renderCloset(); }
     renderAct();
   }
   function closePanel() {
@@ -1422,7 +1438,7 @@ button.item .ic svg { width: 42px; height: 42px; }
       if (pct != null) { var bar = document.createElement("div"); bar.className = "mbar"; var i2 = document.createElement("i"); i2.style.width = Math.round(pct * 100) + "%"; bar.appendChild(i2); li.appendChild(bar); }
       var bt = document.createElement("button"); bt.type = "button"; bt.className = "primary small"; bt.textContent = btnTxt; bt.disabled = dis; bt.setAttribute(attr[0], attr[1]); bt.style.gridRow = "1 / span 3"; li.appendChild(bt); ul.appendChild(li);
     }
-    var wallet = document.createElement("p"); wallet.className = "gcap"; wallet.textContent = "Você tem " + (P.coins || 0) + " ossos · ganhos hoje nos minigames: " + (s.coins || 0) + "/" + MG_COIN_CAP; box.appendChild(wallet);
+    var wallet = document.createElement("p"); wallet.className = "gcap"; wallet.textContent = "Você tem " + (P.coins || 0) + " ossos · ganhos hoje nos minigames: " + (s.coins || 0) + "/" + mgCap(); box.appendChild(wallet);
     function qList(scope, L, bonus, resetTxt) {
       var ul = list();
       L.list.forEach(function (q, i) {
@@ -1474,7 +1490,7 @@ button.item .ic svg { width: 42px; height: 42px; }
   function mgLeft(id) { var s = mgState(); return Math.max(0, MG_LIMIT - (s.n[id] || 0)) + (s.extra || 0); }
   function renderGames() {
     var box = $("sGames"); if (!P) return; var s = mgState(); box.innerHTML = "";
-    var cap = document.createElement("p"); cap.className = "gcap"; cap.textContent = "Hoje nos minigames: ossos " + (s.coins || 0) + "/" + MG_COIN_CAP + " · XP " + (s.xp || 0) + "/" + MG_XP_CAP + (s.extra ? " · passes extras: " + s.extra : ""); box.appendChild(cap);
+    var cap = document.createElement("p"); cap.className = "gcap"; cap.textContent = "Hoje nos minigames: ossos " + (s.coins || 0) + "/" + mgCap() + " · XP " + (s.xp || 0) + "/" + MG_XP_CAP + (s.extra ? " · passes extras: " + s.extra : ""); box.appendChild(cap);
     var ul = document.createElement("ul"); ul.className = "glist";
     MG_GAMES.forEach(function (g) {
       var li = document.createElement("li"), left = mgLeft(g.id);
@@ -1994,7 +2010,8 @@ function draw(ts) {
     var rec = sc > (P.mgBest[id] || 0); if (rec) P.mgBest[id] = sc;
     var s = mgState(), lucky = "";
     if (oss > 0 && (P.inv.lucky || 0) > 0) { P.inv.lucky--; oss *= 2; lucky = " (dobrado pelo biscoito da sorte)"; }
-    var give = Math.max(0, Math.min(oss, MG_COIN_CAP - (s.coins || 0))); s.coins = (s.coins || 0) + give;
+    oss = Math.round(oss * mgBoost());
+    var give = Math.max(0, Math.min(oss, mgCap() - (s.coins || 0))); s.coins = (s.coins || 0) + give;
     var xpAsk = xp; xp = Math.max(0, Math.min(xp, MG_XP_CAP - (s.xp || 0))); s.xp = (s.xp || 0) + xp;
     P.lastPlay = Date.now(); st.joy = clamp(st.joy + 10, 0, 100); st.hunger = clamp(st.hunger - 4, 0, 100); st.eng = clamp(st.eng - 6, 10, 100); st.hyg = clamp(st.hyg - 3, 5, 100);
     logEv("play", MG_GAMES.filter(function (g) { return g.id === id; })[0].name + ": " + sc + (id === "plat" ? "/12" : " pts") + " (+" + xp + " XP)");
@@ -2053,6 +2070,208 @@ function draw(ts) {
   $("sGames").addEventListener("click", function (ev) { var b = ev.target.closest ? ev.target.closest("button[data-g]") : null; if (b && !b.disabled) mgOpen(b.getAttribute("data-g")); });
   requestAnimationFrame(function (ts) { lastT = ts; lastActive = ts; frame(ts); });
   var ids = Object.keys(db.profiles);
+
+  /* ---------- casinha (idle) ---------- */
+  var H_ST = [
+    { id: "bed", name: "Caminha de luxo", desc: "Cochilos rendem ossos.", cost: 40, rate: 15, ic: "🛏️" },
+    { id: "feeder", name: "Comedouro automático", desc: "Sempre cheio, sempre feliz.", cost: 180, rate: 55, ic: "🥣" },
+    { id: "toys", name: "Cantinho de brinquedos", desc: "Bolinhas e ossinhos de borracha.", cost: 700, rate: 170, ic: "🧸" },
+    { id: "garden", name: "Jardim", desc: "Espaço para correr e escavar.", cost: 2600, rate: 520, ic: "🌳" },
+    { id: "shop", name: "Petshop do bairro", desc: "O Tiro Tiro virou sócio.", cost: 9500, rate: 1500, ic: "🏪" }
+  ];
+  var H_MILE = [10, 25, 50, 100], H_GROW = 1.15, H_CROWN = 0.25, H_CROWN_MIN = 60;
+  var H_UP = [
+    { id: "bask", name: "Cesta maior", max: 4, cost: function (l) { return Math.round(150 * Math.pow(3, l)); }, desc: function (l) { return "Guarda " + (4 + 4 * l) + " h de ossos → " + (8 + 4 * l) + " h"; } },
+    { id: "mg", name: "Treino de minigames", max: 5, cost: function (l) { return Math.round(300 * Math.pow(2.2, l)); }, desc: function (l) { return "Minigames pagam +" + (10 * l) + "% → +" + (10 * l + 10) + "% e o limite diário sobe +20"; } },
+    { id: "care", name: "Cuidador", max: 2, cost: function (l) { return l === 0 ? 2500 : 9000; }, desc: function (l) { return l === 0 ? "Limpa o cocô sozinho depois de 90 s" : "Também dá banho quando ele está muito sujinho"; } }
+  ];
+  var H_EX = [
+    { id: "walk", name: "Passeio no bairro", min: 10, fee: 10, rew: [20, 28], xp: 8, unlock: 0, desc: "Uma voltinha rápida." },
+    { id: "vet", name: "Visita ao veterinário", min: 45, fee: 100, rew: [300, 380], xp: 20, unlock: 400, desc: "Check-up e petisco de brinde." },
+    { id: "show", name: "Concurso de beleza", min: 180, fee: 500, rew: [1500, 2000], xp: 45, unlock: 2500, desc: "Com roupinha ele ganha +20%." }
+  ];
+  var hQty = 1, hSig = "", hSeen = null, hCarT = 0, hTickN = 0;
+  function homeS() {
+    if (!P) return null;
+    var h = P.home; if (!h) h = P.home = { t: Date.now(), bank: 0, lv: {}, up: {}, crowns: 0, ex: null, exu: { walk: 1 }, tot: 0 };
+    if (!h.lv) h.lv = {}; if (!h.up) h.up = {}; if (!h.exu) h.exu = { walk: 1 }; if (h.bank == null) h.bank = 0; if (!h.t) h.t = Date.now();
+    return h;
+  }
+  function hFmt(n) {
+    n = Math.floor(n); if (n < 1000) return String(n);
+    var u = [["k", 1e3], ["M", 1e6], ["B", 1e9], ["T", 1e12]], i = 0; while (i < 3 && n >= u[i + 1][1] * 0.9995 && u[i + 1]) i++;
+    var v = n / u[i][1]; return (v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2)).replace(/\.?0+$/, "").replace(".", ",") + u[i][0];
+  }
+  function hMult(lv) { var m = 1; H_MILE.forEach(function (x) { if (lv >= x) m *= 2; }); return m; }
+  function hStRate(s, lv) { return s.rate * lv * hMult(lv); }
+  function hCrown(h) { return 1 + H_CROWN * (h.crowns || 0); }
+  function hRate(h) { var r = 0; H_ST.forEach(function (s) { r += hStRate(s, h.lv[s.id] || 0); }); return r * hCrown(h); }
+  function hCapH(h) { return 4 + 4 * (h.up.bask || 0); }
+  function hLevels(h) { var n = 0; H_ST.forEach(function (s) { n += h.lv[s.id] || 0; }); return n; }
+  function hCostN(s, lv, n) { var c = 0; for (var i = 0; i < n; i++) c += Math.ceil(s.cost * Math.pow(H_GROW, lv + i)); return c; }
+  function hMaxN(s, lv, coins) { var n = 0, c = 0; while (n < 500) { var nx = Math.ceil(s.cost * Math.pow(H_GROW, lv + n)); if (c + nx > coins) break; c += nx; n++; } return n; }
+  function mgCap() { var h = P && P.home; return MG_COIN_CAP + 20 * ((h && h.up && h.up.mg) || 0); }
+  function mgBoost() { var h = P && P.home; return 1 + 0.1 * ((h && h.up && h.up.mg) || 0); }
+  function hAccrue(now0) {
+    var h = homeS(); if (!h) return 0;
+    var el = Math.max(0, Math.min(now0 - h.t, 14 * 86400000)); h.t = now0;
+    var rate = hRate(h), cap = rate * hCapH(h), before = h.bank;
+    h.bank = Math.min(cap, h.bank + rate * el / 3600000); if (h.bank < before) h.bank = before;
+    return h.bank - before;
+  }
+  function hCollect() {
+    var h = homeS(); hAccrue(Date.now()); var n = Math.floor(h.bank); if (n < 1) return;
+    h.bank -= n; h.tot = (h.tot || 0) + n; addCoins(n, "casinha"); speak("+" + n + " ossos da casinha!", 2200); logEv("home", "Coletou " + n + " ossos da casinha");
+    save(); renderHome(); updateBadges();
+  }
+  function hBuy(id) {
+    var h = homeS(), s = H_ST.filter(function (x) { return x.id === id; })[0]; if (!s) return;
+    hAccrue(Date.now()); var lv = h.lv[id] || 0, n = hQty === 0 ? hMaxN(s, lv, P.coins || 0) : hQty; if (n < 1) n = 1;
+    var c = hCostN(s, lv, n); if ((P.coins || 0) < c) { speak("Faltam ossos!", 1600); return; }
+    spend(c); h.lv[id] = lv + n; var m0 = hMult(lv), m1 = hMult(lv + n);
+    logEv("home", s.name + " nível " + h.lv[id]); speak(m1 > m0 ? s.name + " rendendo o dobro!" : s.name + " nível " + h.lv[id] + "!", 2200);
+    checkProgress(); save(); renderHome(); updateBadges();
+  }
+  function hBuyUp(id) {
+    var h = homeS(), u = H_UP.filter(function (x) { return x.id === id; })[0]; if (!u) return;
+    hAccrue(Date.now()); var l = h.up[id] || 0; if (l >= u.max) return; var c = u.cost(l);
+    if ((P.coins || 0) < c) { speak("Faltam ossos!", 1600); return; }
+    spend(c); h.up[id] = l + 1; logEv("home", u.name + " nível " + h.up[id]); speak(u.name + " melhorada!", 2000); save(); renderHome();
+  }
+  function hExStart(id) {
+    var h = homeS(), e = H_EX.filter(function (x) { return x.id === id; })[0]; if (!e || h.ex) return;
+    if (!h.exu[id]) {
+      if ((P.coins || 0) < e.unlock) { speak("Faltam ossos!", 1600); return; }
+      spend(e.unlock); h.exu[id] = 1; speak(e.name + " liberado!", 2000); save(); renderHome(); return;
+    }
+    if ((P.coins || 0) < e.fee) { speak("Faltam ossos!", 1600); return; }
+    spend(e.fee);
+    var sc = 1 + hLevels(h) / 40, r = e.rew[0] + Math.random() * (e.rew[1] - e.rew[0]);
+    if (id === "show" && (P.equip.head || P.equip.body || P.equip.face)) r *= 1.2;
+    h.ex = { id: id, end: Date.now() + e.min * 60000, rew: Math.round(r * sc), xp: e.xp };
+    speak("Vamos nessa!", 1800); logEv("home", "Saiu: " + e.name); save(); renderHome();
+  }
+  function hExClaim() {
+    var h = homeS(), x = h.ex; if (!x || Date.now() < x.end) return;
+    var e = H_EX.filter(function (y) { return y.id === x.id; })[0]; h.ex = null;
+    addCoins(x.rew, e.name); addXP(x.xp); st.joy = clamp(st.joy + 8, 0, 100); happyUntil = now + 1600;
+    speak("Voltei! +" + x.rew + " ossos!", 2400); logEv("home", e.name + ": +" + x.rew + " ossos"); checkProgress(); save(); renderHome(); renderAll(true);
+  }
+  var hConfirm = false;
+  function hPrestige() {
+    var h = homeS(), lv = hLevels(h); if (lv < H_CROWN_MIN) return;
+    if (!hConfirm) { hConfirm = true; renderHome(); setTimeout(function () { if (hConfirm) { hConfirm = false; if (panel === "home") renderHome(); } }, 6000); return; }
+    hConfirm = false; var g = Math.max(1, Math.floor(lv / H_CROWN_MIN)); h.crowns = (h.crowns || 0) + g; h.lv = {}; h.bank = 0; h.t = Date.now();
+    logEv("home", "Aposentou a casinha: +" + g + " coleira(s)"); queue.push("Nova coleira! Renda da casinha ×" + hCrown(h).toFixed(2).replace(".", ",") + " para sempre.");
+    happyUntil = now + 2500; for (var i = 0; i < 6; i++) addHeart(430 + Math.random() * 100, 360 + Math.random() * 40, 14 + Math.random() * 8);
+    save(); renderHome(); updateBadges();
+  }
+  function hEta(need, rate) { if (rate <= 0) return ""; var ms = need / rate * 3600000; return ms < 60000 ? "menos de 1 min" : fmtDur(ms); }
+  function renderHome() {
+    var box = $("sHome"); if (!P || !box) return; var h = homeS(); hAccrue(Date.now()); box.innerHTML = "";
+    var rate = hRate(h), cap = rate * hCapH(h), coins = P.coins || 0;
+    function mk(tag, cls, txt, par) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; if (par) par.appendChild(e); return e; }
+    function sec(t, sub) { var hh = mk("h4", "shh", t, box); if (sub) mk("small", "", sub, hh); }
+    function btn(par, txt, attr, dis, cls) { var b = mk("button", cls || "primary small", txt, par); b.type = "button"; b.disabled = !!dis; b.setAttribute(attr[0], attr[1]); b.style.gridRow = "1 / span 3"; return b; }
+    // cesta
+    var card = mk("div", "hbank", null, box), top = mk("div", "hb-top", null, card);
+    var l = mk("div", "", null, top); mk("span", "hb-k", "Cesta de ossos", l); var big = mk("b", "hb-n", "", l); big.id = "hBank";
+    var r = mk("div", "hb-r", null, top); mk("span", "hb-k", "Renda", r); mk("b", "hb-v", hFmt(rate) + "/h" + ((h.crowns || 0) ? " · ×" + hCrown(h).toFixed(2).replace(".", ",") : ""), r);
+    var bar = mk("div", "mbar hb-bar", null, card); var bi = mk("i", "", null, bar); bi.id = "hBar";
+    var note = mk("p", "hb-note", "", card); note.id = "hNote";
+    var cb = mk("button", "primary", "Coletar", card); cb.type = "button"; cb.id = "hCollect"; cb.setAttribute("data-h", "collect");
+    // quantidade
+    var qr = mk("div", "hqty", null, box); mk("span", "", "Comprar", qr);
+    [[1, "×1"], [10, "×10"], [0, "Máx"]].forEach(function (q) { var b = mk("button", "chip" + (hQty === q[0] ? " on" : ""), q[1], qr); b.type = "button"; b.setAttribute("data-hq", q[0]); });
+    // estações
+    sec("Estações", "Cada nível rende mais. Nos níveis 10, 25, 50 e 100 a estação rende o dobro.");
+    var ul = mk("ul", "glist hlist", null, box);
+    H_ST.forEach(function (s) {
+      var lv = h.lv[s.id] || 0, n = hQty === 0 ? Math.max(1, hMaxN(s, lv, coins)) : hQty, c = hCostN(s, lv, n), can = coins >= c;
+      var li = mk("li", "", null, ul), b = mk("b", "", s.ic + " " + s.name, li);
+      var nowR = hStRate(s, lv) * hCrown(h), nxR = hStRate(s, lv + n) * hCrown(h);
+      mk("span", "gd", (lv ? "Rende " + hFmt(nowR) + "/h" : s.desc) + " → " + hFmt(nxR) + "/h", li);
+      var nm = H_MILE.filter(function (x) { return x > lv; })[0];
+      var info = mk("span", "gm", (lv ? "Nível " + lv + " · " : "") + (nm ? "dobra no nível " + nm : "bônus máximo"), li);
+      if (!can && rate > 0) { var fl = mk("span", "gd", "Faltam " + hFmt(c - coins) + " ossos · ~" + hEta(c - coins, rate), li); }
+      btn(li, (lv ? "Melhorar" : "Construir") + (n > 1 ? " ×" + n : "") + " · 🦴 " + hFmt(c), ["data-hs", s.id], !can);
+    });
+    // melhorias
+    sec("Melhorias");
+    ul = mk("ul", "glist hlist", null, box);
+    H_UP.forEach(function (u) {
+      var lv = h.up[u.id] || 0, li = mk("li", "", null, ul); mk("b", "", u.name + " · " + lv + "/" + u.max, li);
+      if (lv >= u.max) { mk("span", "gd", u.id === "bask" ? "Guarda " + (4 + 4 * lv) + " h de ossos." : u.id === "mg" ? "Minigames pagam +" + (10 * lv) + "% e o limite diário é " + (MG_COIN_CAP + 20 * lv) + "." : "Limpa o cocô e dá banho sozinho.", li); btn(li, "Máximo", ["data-hu", u.id], true); }
+      else { mk("span", "gd", u.desc(lv), li); var c = u.cost(lv); btn(li, "🦴 " + hFmt(c), ["data-hu", u.id], coins < c); }
+    });
+    // expedições
+    sec("Expedições", "Uma por vez. Você paga uma taxa e ele volta com ossos e XP.");
+    ul = mk("ul", "glist hlist", null, box);
+    H_EX.forEach(function (e) {
+      var li = mk("li", "", null, ul), un = !!h.exu[e.id], run = h.ex && h.ex.id === e.id;
+      mk("b", "", e.name, li);
+      var sc = 1 + hLevels(h) / 40;
+      if (run) {
+        var left = h.ex.end - Date.now(), done = left <= 0, d = mk("span", "gd", "", li); d.setAttribute("data-ex", "t"); if (done) d.setAttribute("data-done", "1"); d.textContent = done ? "Ele voltou! Prêmio: " + h.ex.rew + " ossos e " + h.ex.xp + " XP." : "Volta em " + fmtDur(left);
+        var bb = mk("div", "mbar", null, li); var ii = mk("i", "", null, bb); ii.setAttribute("data-ex", "b"); ii.style.width = Math.round(100 * (1 - Math.max(0, left) / (e.min * 60000))) + "%";
+        btn(li, done ? "Receber" : "Em andamento", ["data-hx", "claim"], !done);
+      } else {
+        mk("span", "gd", e.desc + " " + e.min + " min · taxa " + e.fee + " · prêmio ~" + Math.round(e.rew[0] * sc) + "–" + Math.round(e.rew[1] * sc) + " ossos", li);
+        if (un) btn(li, "Sair · 🦴 " + e.fee, ["data-hx", e.id], !!h.ex || coins < e.fee);
+        else btn(li, "Liberar · 🦴 " + hFmt(e.unlock), ["data-hx", e.id], coins < e.unlock || !!h.ex);
+      }
+    });
+    // coleira
+    var lvT = hLevels(h); sec("Coleira de prestígio", "Aposente a casinha: ela volta ao zero, mas a renda ganha um bônus permanente.");
+    var pc = mk("div", "hbank hprest", null, box), g = Math.max(1, Math.floor(lvT / H_CROWN_MIN));
+    mk("p", "hb-note", "Coleiras: " + (h.crowns || 0) + " · bônus atual ×" + hCrown(h).toFixed(2).replace(".", ",") + (lvT >= H_CROWN_MIN ? " · ao aposentar: +" + g + " coleira(s) → ×" + (1 + H_CROWN * ((h.crowns || 0) + g)).toFixed(2).replace(".", ",") : ""), pc);
+    var pbar = mk("div", "mbar", null, pc); var pi = mk("i", "", null, pbar); pi.style.width = Math.min(100, Math.round(100 * lvT / H_CROWN_MIN)) + "%";
+    mk("p", "hb-note", "Níveis somados: " + lvT + "/" + H_CROWN_MIN + ". Melhorias, expedições liberadas e suas moedas são mantidas.", pc);
+    var pb = mk("button", hConfirm ? "primary" : "primary", hConfirm ? "Toque de novo para confirmar" : "Aposentar a casinha", pc); pb.type = "button"; pb.disabled = lvT < H_CROWN_MIN; pb.setAttribute("data-h", "prest");
+    hSig = coins + "|" + lvT; hLive();
+  }
+  function hLive() {
+    var h = homeS(); if (!h || panel !== "home") return; var rate = hRate(h), cap = rate * hCapH(h);
+    var bk = $("hBank"); if (!bk) return;
+    bk.textContent = hFmt(h.bank) + " / " + hFmt(cap); $("hBar").style.width = cap > 0 ? Math.min(100, 100 * h.bank / cap) + "%" : "0%";
+    var full = cap > 0 && h.bank >= cap - 0.01, nt = $("hNote");
+    nt.textContent = rate <= 0 ? "Construa a primeira estação para começar a render ossos, até com o jogo fechado." : full ? "Cesta cheia! Colete para voltar a render." : "Enche em " + hEta(cap - h.bank, rate) + " (cabem " + hCapH(h) + " h).";
+    $("hCollect").disabled = Math.floor(h.bank) < 1;
+    document.querySelectorAll("#sHome [data-ex]").forEach(function (el) {
+      if (!h.ex) return; var e = H_EX.filter(function (y) { return y.id === h.ex.id; })[0], left = h.ex.end - Date.now();
+      if (el.getAttribute("data-ex") === "b") el.style.width = Math.round(100 * (1 - Math.max(0, left) / (e.min * 60000))) + "%";
+      else if (left > 0) el.textContent = "Volta em " + fmtDur(left);
+      else if (!el.getAttribute("data-done")) { el.setAttribute("data-done", "1"); renderHome(); }
+    });
+  }
+  function hBadge() {
+    var h = P && P.home; var d = document.querySelector('.rbtn[data-p="home"] .dot'); if (!d) return;
+    if (!h) { d.hidden = true; return; }
+    var rate = hRate(h), cap = rate * hCapH(h), ready = h.ex && Date.now() >= h.ex.end;
+    d.hidden = !((rate > 0 && h.bank >= cap * 0.5 && h.bank >= 10) || ready);
+  }
+  $("sHome").addEventListener("click", function (ev) {
+    var b = ev.target.closest ? ev.target.closest("button") : null; if (!b || b.disabled) return;
+    var a;
+    if ((a = b.getAttribute("data-hs"))) hBuy(a);
+    else if ((a = b.getAttribute("data-hu"))) hBuyUp(a);
+    else if ((a = b.getAttribute("data-hx"))) { if (a === "claim") hExClaim(); else hExStart(a); }
+    else if ((a = b.getAttribute("data-hq")) != null) { hQty = +a; renderHome(); }
+    else if ((a = b.getAttribute("data-h"))) { if (a === "collect") hCollect(); else if (a === "prest") hPrestige(); }
+  });
+  setInterval(function () {
+    if (!P || vGame.hidden) return;
+    var h = homeS(); if (!h) return; var t0 = Date.now(), first = hSeen !== P.id, gap = t0 - h.t;
+    var gain = hAccrue(t0);
+    if (first) { hSeen = P.id; if (gain >= 5 && gap > 60000) queue.push("A casinha rendeu +" + hFmt(gain) + " ossos enquanto você esteve fora. Colete na Casinha!"); }
+    var up = h.up.care || 0;
+    if (up >= 1 && P.poops > 0 && mode !== "bath") { if (!hCarT) hCarT = t0; if (t0 - hCarT > 90000) { hCarT = 0; cleanPoops(P.poops); } } else hCarT = 0;
+    if (up >= 2 && st.hyg < 25 && mode === "idle") { st.hyg = 100; P.baths++; logEv("bath", "O cuidador deu banho"); speak("Banho do cuidador. Cheirosinho!", 2400); for (var k = 0; k < 6; k++) addBubble(380 + Math.random() * 200, 220 + Math.random() * 140); save(); }
+    hTickN++; if (hTickN % 10 === 0) save();
+    if (hTickN % 3 === 0) hBadge();
+    if (panel === "home") { if (hSig !== (P.coins || 0) + "|" + hLevels(h)) renderHome(); else hLive(); }
+  }, 1000);
+
   if (db.current && db.profiles[db.current]) enterProfile(db.current, false);
   else if (ids.length === 1) enterProfile(ids[0], false);
   else if (ids.length > 1) { renderPicker(); showView("picker"); }
@@ -2066,7 +2285,7 @@ function draw(ts) {
 <button type="button" id="pwaBtn" hidden style="position:fixed;right:10px;bottom:10px;z-index:99;padding:9px 14px;border:0;border-radius:14px;background:#2f9d7f;color:#fff;font:700 0.85rem Nunito,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3)" onclick="if(__ip){__ip.prompt();__ip=null;this.hidden=true}">Instalar app</button>
 <script>
 if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
-window.__BUILD = "1791652540";
+window.__BUILD = "1791653209";
 (function () {
   function banner() {
     if (document.getElementById("updBtn")) return;
