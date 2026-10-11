@@ -555,7 +555,7 @@ body.walking .pxgo { display: none; }
       </div>
       <div class="wksum" id="wksum" hidden></div>
       
-      <button type="button" class="pxgo" id="pxGo" aria-label="Entrar na casinha em pixel art" title="Casinha pixel"><svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path fill="#3a2616" d="M7 1h2v1h2v1h2v1h1v1h1v1h-1v1h-1v7h-1v1H4v-1H3V7H2V6h1V5h1V4h2V3h1z"/><path fill="#f5d9a8" d="M7 2h2v1h2v1h2v1h-1v1h1v1h-1v6H4V8H3V7h1V6H3V5h2V4h2z"/><path fill="#c4453f" d="M7 2h2v1h2v1h2v1H3V5h2V4h2z"/><path fill="#6b4426" d="M7 9h2v4H7z"/></svg><span>Pixel</span></button>
+      <button type="button" class="pxgo" id="pxGo" aria-label="Entrar na casinha" title="Casinha"><svg viewBox="0 0 16 16" aria-hidden="true" shape-rendering="crispEdges"><path fill="#3a2616" d="M7 1h2v1h2v1h2v1h1v1h1v1h-1v1h-1v7h-1v1H4v-1H3V7H2V6h1V5h1V4h2V3h1z"/><path fill="#f5d9a8" d="M7 2h2v1h2v1h2v1h-1v1h1v1h-1v6H4V8H3V7h1V6H3V5h2V4h2z"/><path fill="#c4453f" d="M7 2h2v1h2v1h2v1H3V5h2V4h2z"/><path fill="#6b4426" d="M7 9h2v4H7z"/></svg><span>Casinha</span></button>
       <div class="px" id="px" hidden>
         <div class="pxbar"><span class="pxchip" id="pxBank"></span><span class="pxrate" id="pxRate"></span><button type="button" class="primary small" id="pxCol">Coletar</button><button type="button" class="sx" id="pxX" aria-label="Sair da casinha">×</button></div>
         <div class="pxwrap" id="pxwrap"><canvas id="pxc" width="180" height="240" aria-label="Casinha em pixel art com o Tiro Tiro"></canvas></div>
@@ -2291,7 +2291,7 @@ function draw(ts) {
     function mk(tag, cls, txt, par) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; if (par) par.appendChild(e); return e; }
     function sec(t, sub) { var hh = mk("h4", "shh", t, box); if (sub) mk("small", "", sub, hh); }
     function btn(par, txt, attr, dis, cls) { var b = mk("button", cls || "primary small", txt, par); b.type = "button"; b.disabled = !!dis; b.setAttribute(attr[0], attr[1]); b.style.gridRow = "1 / span 3"; return b; }
-    var pxb = mk("button", "primary pxenter", "🏠 Entrar na casinha (modo pixel)", box); pxb.type = "button"; pxb.setAttribute("data-h", "pixel");
+    var pxb = mk("button", "primary pxenter", "🏠 Entrar na casinha", box); pxb.type = "button"; pxb.setAttribute("data-h", "pixel");
     // cesta
     var card = mk("div", "hbank", null, box), top = mk("div", "hb-top", null, card);
     var l = mk("div", "", null, top); mk("span", "hb-k", "Cesta de ossos", l); var big = mk("b", "hb-n", "", l); big.id = "hBank";
@@ -2854,7 +2854,7 @@ var PXW = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAcAAAAA4CAYAAABqkyizAAA
 <button type="button" id="pwaBtn" hidden style="position:fixed;right:10px;bottom:10px;z-index:99;padding:9px 14px;border:0;border-radius:14px;background:#2f9d7f;color:#fff;font:700 0.85rem Nunito,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3)" onclick="if(__ip){__ip.prompt();__ip=null;this.hidden=true}">Instalar app</button>
 <script>
 if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
-window.__BUILD = "1791722927";
+window.__BUILD = "1791723007";
 (function () {
   function banner() {
     if (document.getElementById("updBtn")) return;
