@@ -254,6 +254,19 @@ body.walking #rail, body.walking .actions, body.walking .hint { visibility: hidd
 .wkit .nm { display: flex; flex-direction: column; min-width: 0; } .wkit .nm b { font-family: Fredoka, sans-serif; font-weight: 600; font-size: .9rem; } .wkit .nm small { font-size: .68rem; color: rgba(255,255,255,.65); }
 .wkit .ic.dim svg { filter: grayscale(1) brightness(.55); opacity: .8; }
 .wkit .pc { font: 800 .9rem Fredoka, sans-serif; color: var(--rc); }
+
+.px { position: absolute; inset: 0; z-index: 22; background: #1d1210; display: flex; flex-direction: column; color: #fff; }
+.px[hidden], .pxtoast[hidden] { display: none; }
+.pxbar { display: flex; align-items: center; gap: 8px; padding: 9px 10px; flex: none; }
+.pxbar b { font-family: Fredoka, sans-serif; font-weight: 600; font-size: 1.05rem; margin-right: auto; }
+.pxchip { font: 700 0.82rem Nunito, sans-serif; background: rgba(255,255,255,0.14); padding: 5px 10px; border-radius: 99px; white-space: nowrap; }
+.pxrate { font: 700 0.74rem Nunito, sans-serif; color: #9be8cf; white-space: nowrap; margin-right: auto; }
+.pxwrap { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+.pxwrap canvas { image-rendering: pixelated; image-rendering: crisp-edges; border-radius: 6px; touch-action: none; cursor: pointer; box-shadow: 0 0 0 3px #3a2616; }
+.pxtoast { position: absolute; left: 12px; right: 12px; bottom: 44px; background: rgba(20,10,8,0.92); border: 1.5px solid rgba(255,255,255,0.25); border-radius: 12px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 0.84rem; font-weight: 700; }
+.pxhint { margin: 0; padding: 6px 12px 10px; font-size: 0.72rem; text-align: center; color: rgba(255,255,255,0.65); flex: none; }
+.pxbar #pxCol { width: auto; padding: 7px 14px; font-size: 0.85rem; }
+.sheet .pxenter { background: #6b4fd8; color: #fff; border: 0; width: 100%; padding: 12px; border-radius: 12px; font-size: 0.98rem; margin: 0 0 8px; }
 .gcap { margin: 6px 0; font-size: 0.78rem; color: rgba(255,255,255,0.8); line-height: 1.3; }
 .shh { margin: 12px 0 5px; font-family: Fredoka, sans-serif; font-size: 1rem; color: #fff; display: flex; flex-direction: column; font-weight: 600; }
 .shh small { font: 600 0.72rem Nunito, sans-serif; color: rgba(255,255,255,0.7); }
@@ -537,6 +550,12 @@ body.walking #rail, body.walking .actions, body.walking .hint { visibility: hidd
       </div>
       <div class="wksum" id="wksum" hidden></div>
       
+      <div class="px" id="px" hidden>
+        <div class="pxbar"><span class="pxchip" id="pxBank"></span><span class="pxrate" id="pxRate"></span><button type="button" class="primary small" id="pxCol">Coletar</button><button type="button" class="sx" id="pxX" aria-label="Sair da casinha">×</button></div>
+        <div class="pxwrap" id="pxwrap"><canvas id="pxc" width="180" height="240" aria-label="Casinha em pixel art com o Tiro Tiro"></canvas></div>
+        <div class="pxtoast" id="pxToast" hidden></div>
+        <p class="pxhint">Toque no chão para chamar o Tiro Tiro, nele para fazer carinho e na cesta para coletar.</p>
+      </div>
       <div class="mg" id="mg" hidden>
         <div class="mgbar"><b id="mgTitle"></b><span id="mgScore"></span><span id="mgTime"></span><button type="button" class="sx" id="mgQuit" aria-label="Sair do minigame">×</button></div>
         <div class="mgbox"><canvas id="mgc" width="640" height="360" aria-label="Minigame"></canvas>
@@ -1001,7 +1020,7 @@ body.walking #rail, body.walking .actions, body.walking .hint { visibility: hidd
   $("sClose").addEventListener("click", closePanel);
   window.addEventListener("resize", function () { if (panel) applyZoom(); });
   $("sActBtn").addEventListener("click", commitPV);
-  ["rail", "sheet", "mg", "wkhud", "wksum"].forEach(function (id) { $(id).addEventListener("pointerdown", function (ev) { ev.stopPropagation(); }); });
+  ["rail", "sheet", "mg", "wkhud", "wksum", "px"].forEach(function (id) { $(id).addEventListener("pointerdown", function (ev) { ev.stopPropagation(); }); });
   document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && panel) closePanel(); });
   $("closet").addEventListener("click", function (ev) {
     var b = ev.target.closest ? ev.target.closest("button.item") : null; if (b && P) selectItem(b.getAttribute("data-id"));
@@ -2266,6 +2285,7 @@ function draw(ts) {
     function mk(tag, cls, txt, par) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; if (par) par.appendChild(e); return e; }
     function sec(t, sub) { var hh = mk("h4", "shh", t, box); if (sub) mk("small", "", sub, hh); }
     function btn(par, txt, attr, dis, cls) { var b = mk("button", cls || "primary small", txt, par); b.type = "button"; b.disabled = !!dis; b.setAttribute(attr[0], attr[1]); b.style.gridRow = "1 / span 3"; return b; }
+    var pxb = mk("button", "primary pxenter", "🏠 Entrar na casinha (modo pixel)", box); pxb.type = "button"; pxb.setAttribute("data-h", "pixel");
     // cesta
     var card = mk("div", "hbank", null, box), top = mk("div", "hb-top", null, card);
     var l = mk("div", "", null, top); mk("span", "hb-k", "Cesta de ossos", l); var big = mk("b", "hb-n", "", l); big.id = "hBank";
@@ -2350,7 +2370,7 @@ function draw(ts) {
     else if ((a = b.getAttribute("data-hu"))) hBuyUp(a);
     else if ((a = b.getAttribute("data-hx"))) { if (a === "claim") hExClaim(); else hExStart(a); }
     else if ((a = b.getAttribute("data-hq")) != null) { hQty = +a; renderHome(); }
-    else if ((a = b.getAttribute("data-h"))) { if (a === "collect") hCollect(); else if (a === "prest") hPrestige(); }
+    else if ((a = b.getAttribute("data-h"))) { if (a === "collect") hCollect(); else if (a === "prest") hPrestige(); else if (a === "pixel") pxOpen(); }
   });
   setInterval(function () {
     if (!P || vGame.hidden) return;
@@ -2560,6 +2580,254 @@ function draw(ts) {
     ev.stopPropagation(); var m = ev.target.closest ? ev.target.closest(".wkm") : null; if (m) { ev.preventDefault(); wkCollect(m.getAttribute("data-k")); }
   });
 
+var PXS = {"south": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAEPElEQVR4nO2YT0xcRRzHP/MWxGIvtZBCWxuVtAWyWWMKFUoJtWnQ9WYksYdSWQUFvRAO9eTJE5va9CKFLn/dHjWNicmiBytkQUESErJZWAka+SMlFP8kKkXYNx7evld2gUiZOZh0v8lL3sz8Zr6/75uZ38zvQRpppJFGGo8yhEJfqWEc5TGMPRIDEAt4iQW8qY7sFjLS7iXS7lVxQU0AQGvf2F5EyFjAy7VbY6r06gKqjh97WBEyFvDS2jdG1fFjqvTqAuChRGh1HjQJgAcipjqqMSwRSY+RWPOpzme61Hgz1Lo/wMD0rPMe7agGYENu793A9Oz/YgZE4dtfAhBZvAfAldrnkwwyRHzL03KpBLBE5B7dz8mGECiEc6UZkNIksniPt149uXtCEef9NywRnZ9FVeit8VQHiMz+DkDX7RgAK3/+DWydDX9wnIP7s51y/WvFTl8VqJzEAHKqoxp/cDzJ4R/n1/j0TtSp8wfHqXmxmGePZjk2dp/Cd75S8kNZwJtnc5Mc3Q0223eHl5X8UA6jqc5cbPbvaHux2U93eNkRau8FFSjvga7bMWfdG8DLNT7qzuZua1td43Pe/cFxPM/kq9IrCxAf9f8sv/igitn5FXrDy5iJBjtc2th876ksyudQ3gFe+XAAFJex8gyYwOz8CqPTS0wGvKzHrdN1Pb6JJBE6Wy5Z5Wu3xqhUJU5AeRNfr/Uw8dOisxe++e4XABp7IkkbrKvBA0B5SR7CcNHaN0ZlUT6+wISSH6oCEMKQUzdfQppxx3kbTb1RhDRp87mT6s+VHQZQDqGgIQoJaXJneC6p7vMRq9xd76bN5yYrw3DqbPSH76pSW/xaBhGGvFFXDMDo9BIAi7/+k2STc6SAzNU5Th8/BFhLTAe/FgEkcoCeBo+9pvm4vjTJ4L3O7wFo97lp6o0ipamTXwmysPiULDtzQQphSCEMecVdIFNzghulpRKQQhiy7MwFWXDiObtNCVrygScP5gDwQvl5Rr79mgpjHxUeN0PmKgAVxj5YW8UATpefx3C5yM3JZeYHdW5tGRlA5+VMhLU0GDJXuRqZwR+ZcYTYNgCGSzEVS0DLDDyW6cJc+wvIZjLgpchKUphI/DLxNIa4uqmcYd7HyHpCB7W+lPLm5Sz6wwsATAaS//XYJ3Q4EUoDdU/h+yS+ZYy9QNsS2pAuHs8waQlOEBpcQJrJDoZH5njXCp2sx61Z0AEtM9D++obz3uZz09gzwXXgxNMHWLr7G3/ch+ZghPZNJ3JbbTbuIXVubedALOBNuk4kDioHtvPnyg4jDJdyMm9DaxTaBoIUJ4WhJ/rY0CpAGC7nopaKrAxjxzYVaBMwPGpt3J2+8NqGiTBcSDPO8OiCLlp9AspL8gAIDS5sd1ETTb1RQoMLCMNF6akjumj1nQP/dT1OXN4IDer7+qD5NrqLcXdrl0YaaTwq+BfkxZ72o0zGZwAAAABJRU5ErkJggg==", "south-east": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAFZUlEQVR4nO2ZT2wUVRzHPzO7i6YxotDadcuqCUJLU8uh/5alaEsaYAmJJhguUrSBQhs9cDB6IJ68eepBYHHRarh5MxqWEmIhwFD6J4Zms7QkHLTZZWtLtRdjbWeeh+283SlbOjOlymG/ySYz8/59v+/93u/33m+hiCKKKKKIVUD5vwnkQeQ92+alrgERNxDjsQg97bWOGz4NAsR4LALAs17DcWPvk2azCMfm0K9NuBpozVYgEY2QiEYAhKKoYplqcvbdYs0E+DxwbXia8ViEsa/2gnVVhPle2RmnsjMOwDNe53TWyguJ8ViEAe13AELhlwAk0d7OWhrqKvAqumxw6UaGkxdGHfNyIlnOmlOYQiLV60lEI+yo91vIA+xr9hPtqHHct10BIhRuo2X3fnAgwpx5E4d2vvoI8Xy0hoNc/OwtHrNnHoHtFVA9HrtVAZSq430A/LEwT1NoI8LQ2VHvX76B6kEbTLH5lRLuRtvA5kTZdqOTkxmCmypo2b2fa/2XhBDGY+1UiMI+/epA2vLeEgoAoA2mCDdWoA2mKPe/aJeW7c0iqqrrmF9YILipIkvk54sr9Sl62mvZ15ybdZN8aziIMHT5rSUU4NZwBoCjsVGEorLSBDkVIEUAjCVHCIXb8AcClgp/zkxbhI2d22MpN8nmi4Gc+/z+5q/Ek7MKWfOxxc1JJFbGkiMCKEge4IUNpbzz7hEy6TQD2pVcQ9VDvzYhyX9x4RdZ1rilXD6/vGEdOPR0jo8Sy5HPhz8QQFFUaRbhxgpZZpLvvfkQIQylcUu5mFswaG4KsqPezyftMibYWoU1i8RvHzzM0dioJN8aDnLpRoZP369n43MlKMJABdHcFKQlFLC418ibFct1+wicrIAI79qLoetk0ln7XWklDEAYOlcH0rSGg5LYsYPVVJStp21nNhoratZFm5FaUVSU7EZekZTjFVA9HhkTMum0FLMU5velblMbTNGvTbCvOReNTY9k3ge+PFpni7xjATMPp5clW0hIKNxGV29Ckrz/219cv/tAbmYTiuphftGCetpr+Um7Z5uT6z1QKDLnCzHNq6q6jq7eBFUnLgPwYOYfS5tbwxm0wRRvdPeRmprl5IVR4slZsOlGHceBDRtLMXRdCpiczFBWWiZFGXpuM6oeD5OTGfl+/94d+WzGiFvDGU79+JBTBwJ89PWI7QDmRgCA2Lx1O2WlZVKAdr2PULhNEl4KQ9eZmp6S7x+vX8fnE2kymRTJc3vY1nUl394dH+8dm5DP65VE36ucAWBqespC0jKAxyNXyOf10j00RDqT4nRDA1UnLnOmvo6zDQ1OaeT6d9rgZNMcAIdee8D83JylLN9cLIN4PJSX+3m+xEsiGpGDqkD30JBTChY42gM97bWWzIHpYQA2b91uqVxebj06G7rOdx0+5nWo6YqjAndjEYShmxvc1e3Q0VFimbSHoiiquH/vDuaJFbKrkS/i/BEfkL0rj53bI4OXedxwC9dudHH2Fcie/U8fa2AsOYLP68Xntc6L1/gbyKVOTPJVx/voiI3KftzgiZ6FTBGmEBNn2ksA+OH2BNpgCm0wxbbOOGc/qF71mE8qsaV8eH7IkswaS46I8K69lkrx5CzxZDbz0NvpPI1YCK5XYDGDsDQDZ/4AOPJ6im8OZ6vUdMXNOkQ7aphbMCzHbLdwIkDJ9zpOoSjWodwksQrBqQkpXb0JR3lPRfXgw3LJV7q/TQrT/sdjESo747avkEvhZg84Gqhfm6C5KWj5Zopxm9D9ryAAEe2oEYlopFBWT7CKbJ+Jtfx/QIGcrZuZ6iXllk3vBmv1/4AFN24/3abyWCzmOVdtKkUUUURh/AvG1QV69DctOAAAAABJRU5ErkJggg==", "east": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAEmklEQVR4nO2YXUscVxjHfzM7iy+UFoyojbEthNQXxFLERDbRaghGc1F60buo6UKkhlJIC+13aApiobEaRRvMZ+iWUqoVK1r1IiJWU+xFjVttVZqbRnFnTi9mZ9ZRZzw7u12h7B8G5uU8z/k/5znPyxnIIosssvAJEb/cnqWgpo1OchCL/W2O5/u363wpOhUDrEnjpEVvR03KujIJsTTQQs+jOV7QDQCCOTm+lZ2KBxQ1kDZdWto0JQFh6Pb9w3Att4ZmHZ8BRVZXpg0QK4OJ4P3x199568IrLA+0oKgBhKGjqAHKuyLSRpxWFgKgofJl6kNFDvIAcSOlUmomPeAgdPFCMaGLpTbxbyc3HINXBtukPJHRLfRJ66sAjE2t0VR/1iYfmVinrbHUHheZWGdsak1Kp3SwpAFieaCF8ekoTfVnEwQOZKTIxDoAuZpB98iiFL9MxYDoD1ejqAEHeUiQHpta4+PRBTq//C4pxadWB45beYDCl0poDpURbzVO7I+8DPDVXHlBGDrj01H73kJbYynNoTJ6Omr4JZ5mgwE40C+58nAzQDRdvcE773Z6CsvyPv/6GwB89MUMzaEyIOEFK3gPBzKYRliB74b/cgsJQFRU1RLUND7/KUBk6Zm98ge3TWRindYrJQ6vWHjtXJHnJK4GrD01J2i6esMi4yB20lVRVUuo4ToFZwrZj8Vs4d+e7nkSFoZOZGIdYehM/bzOB2ab4ZqN3D7Ybi87Z7p1/IdvAAg1XKeouNhNn40/NzcdzzvbWwAsL83T21FD65USU+90lBxN5dmuGQuWZ65dLqXn0RzDk3/5MgDiq7gfixHUNJaX5j3Jb0SjqAHvLnNne4v9WIzVJ4+xzgC5mkGOphIeXGBlsI3Krgh94WqrDpzE8cRCISqqah3kD69ssjjoCYD+ONl462BxsrbsiYVMphILMLdOumAZ8bb6N/cWV/m0+jz3Fldl+TgglYXSSR6g4EwhL+ZrjOcWAnBZzfOdDk+tnR59v4A7bz4HIJqTh+FTj5QBlsuPw+bmhus3Nwy3C4ShU1drZrg7s96p0gvSHnAzIqhpvoxQ1ADBRNLy3RWnvIWsbLK5uWFfFo4zWjN27Uau0sw6KUHGAMUieRAPbqoMtx9tk4Kaxs72FjvbWxwn19eRD5jtQ3zfp3QmSdoDmrHLg5sqwQDMTG/b74OaRlDzPuBZcp89nEueqRsf2YF3L+3x9YpOX2e+/e7WyDwjXTWEBx/b76zCpyjOtbHIfz+zZbYHJ7QIspDxgOgPVwMw1BlEU3QmZ9Yo74pw/3Yd4cEFi4hCYrspQhgKQFfFHwBois6+Dh8OzeL3P+hxkPKAHsjj2iWz6IxNRekeWaS3o8atUzyyqsPtwgzco81nypAyIKA/t++7RxaTXkEr62iK7rtguSEjldj6RZLOf6IWfBuQr+zZv8c9hinxGHFMKCkrhYz3Qgbwj/D/O/0wpNrp/nA1uzGVtsZS9nWo7j5SQT0PRiNdNezFDPtAX+6swCmlUilhRVHFV+9VsRszHXZ31E6dcpOkKO+pO4mxh/drKrLJymeRRRb/V/wLtbXBVjWrBrIAAAAASUVORK5CYII=", "north-east": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAEZ0lEQVR4nO2Z3WscVRjGf2dmthsLShRpYkQUe5E0XXNTY+JiJIaCTW8MUkQsiVnsaopFA/4ZghXUdGlaUqwXUrzwbhMRLDENwbgXiemSpkQokrjpTS+bmp05XuyeycxmN7tn9kOEPLDszNmz7zzPeT/OOzNwgAP8byDrYdSoh9EikCuJQaiDiEYJAODOZO1FNEKATMQihMzK56MhsqEegLJeUKFWMRom4Jf5vwqHJP7V1iYPYFVHSw/jF+eBnBekYwOQlSaRsaRcSQxiCRthVB5r0CABYcvgxq17fP5JFEvkiCuikXgSRT4IGhJCN27d4+KnPS5JtfodH85URR4a5IG3ep7bMyYdGyGd/cJGAqKc7Xp7QCZiEfp724r+OBGL5CY5tvs5lg+pStHwMupFobDpuQyfnXpey8Z/KqAY3h/q1JpfdwFhy+DmwmZFc0+91oolbL747nc1VHZHLpskNYDsjZ7k3aP3gRzJfQkZJtKxmZ7LMH59GcpwbJgAL0bbMyUTW1Uk6dh0fPQTlOFY9yrUGz1Ja5uf7LU7rUzPZXxjKsxUNaoUQQRU0i1KQPYPnHbJt7a1+YR8v37EFeHNkZsLmwjD3COwFHRDSA6dGeHHH74t9V8JEO17kyMtLSWNZDZ3Cfc9cZejzzxO2DJ4lHXc8bGplYr46QiQHZ0n6Og8DlAoQgL0D5ym+amnyxryCgBYmP+ZqXgXscllbW7VthIVrbhCIXEAw8wlbWxyGSEMpHS0okI7B1bTtwEYOjPifldLHuBSdzdSOnvmlIOWgNV0Kv+9KyIfSiWR2dwsSr5W0M4BLzo6j7vkvBWmFGHviitcPmvQNZbE0ecD6OWAWE2nJIASspq+TXPzk4AeaQXHtgEjMHkIkMSvvNzDYmrRPe95daDovP2IKxwSO4TMkC4FHwJVob5on3v8j2dLM0wzv6qlsbWVoaUl1w9Njh4OcnkftKvQe8ceMjGcu/DE8GGujORWUK24YZru8daWfzdV5/O/zmA528FZexDIAyHTv3qHxA5Z9obM+tpSSRtZowmA+d82glBwoe2BJsshObtBezzpjlUaCn/e/YP1tSUSsQhTI7lL53ffwF1xoG60yXL4criL9niSHRt2bPaEhMqFkGWxvrbE+toSUjpCiNo2wFrWvJOViMhYsuhzT5Ubq+kUedJ1uffQESC/OtftnmxnDXXHRHs8ydsvPnB/u3x21+w357r5+oMTkO+bpHQIW7XzQmBLTZbbt7gr+84LfzM1YhT1iDd0HmWdqpNXIbCAwn49FA777ndfOj8DwMdXFrlwNeVt1ET+v0D17wxq5kvTfujez7bHk6otFoDwHPuQnK3eC1qJJYQhL43uPrc5fy2tiMpELMIb0dwjxHyJLWfbu+qNKaNSOtjmY77zKiA8n8DQ3YnFhasp6Y1ndbCdNUjObjD4+rPV8NGGdg54Y9szLMavL7uVaSUxiBBGXV6rFqLmj9fVq6Qqw6ti1Hp3rEliHuAADcS/P3qYvKdn+cIAAAAASUVORK5CYII=", "north": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAADkElEQVR4nO1ZS08TURT+7swUFGNiCDFNCS40USBYEq0FGo3EIKSuXLCFpIlIN/4C1/4ESbEgpEvTRXc1hESCWh7BjRZodxosdkHiwhieM9dF545Tpjzae0o06ZdMmplzz/nOuec+T4EaaqjhvwaT1OcStmR0LSiVKgqkI0GkI8HDDp0EbtOTgnQAAtloEIwppwmCUzguIB2AxnRoTAc3dGReDQAA9/u6OAoZsZ6hh7c4TOeFjsZ0WXpo0hZMMEUFN3SkI0F4w0kIRwXaR2eKhgxTVBJe6QwIR7hRcFZjOsZCHY7enRzxWnJ7e1kHpANIzucc33q7PY5vPT63I6jkfA6GJL/sMgoF4JMjXvT43GXpLazkEYp+lvZBOgMGgPfrP8rWe/Pxmyw1AKKNLDPeX5FyW3gWnBtSfkhnoFLnAWA90idLLx9A6+gM5hY3y9Z7+yGP1tEZWXrpABgA1GvlmzmnWeuP1DCW3siE63OLm0XL54v4FlzbG9g/3wIAeD7YZMkWVvKytBakA7Cv42Iovf5yAUpdI4BG4HdB9jS2i1D7T+weGKjXlIqyVgoUVpi5niM8lcZ01g2l7qKj0R53YXz1MsJTaQAg2QNIDNjAuwN9cHucu7Adm1+zWF5ZIuMmO06fmrBEdqTsEdnhgXsDJ/Y+ALg9Hvh9XUB5F6AjQZYBQy99tk/EY0jEY1Q0DpDdB0ohEY+h98EjbHwvPrFSDiOKDPDugPNIkIjHcO16Jy41Nlnvdpg60sOoqpP4prezmuYBEAZgn8CJeAyPB4cBAJm1Vbg07ci2siCdA/nN4kNdZm21pJwyALIM2J33uJuLnM+sfYJ9nhwOVAZVmQNXrrYVvbe2364GDYAqLKOKqsLQdTwLKFD1bev7dJaayeQjMaKq1q+h65gYduG+r8k6dd7tasHEsIuCyslNZsgMQjjqUoGAvxkBfzNcaqEeJGSiLQkvhRFxjNCMncLvMSXDOrZf0Nn7RUFNcx9YTM0CAMaGGqAxHUxRiwpeyfkcmKIWqnZDDTB0nexITXUfsIq2otR4YyRpCRUA69G/ddF9HegIJ0n4q7KMppat3mfmg9RyzqqH/qvg2WiQZ6NBUVJ3yDPj/cfJK8KZ3sioSup2kG5ks0tbRZuXHQqAd6kN7BzQ9hlpAA1sFziiXCLKL7aCFgnI7sQvn9w5sZHYmSOhDoBwHlCAm3/w2Z9K2tRQw1njD536KnVgzf8uAAAAAElFTkSuQmCC", "north-west": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAEdElEQVR4nO2ZzW8bRRjGf7O7ESEnhFBquUKVenGRSi5tSIkQqqoK6l4oVU9ASqzGfIiq9MJf0UNyIG3AhI9wqRBS4YJThGiFQtQWoqohpHFRKqGIyFHTlBtGdGc42LNZx2tnxt5YPeQ5rWdmZ57n/Zh5dwzb2MYjCdWuhZwtmFPNjaWhTSLiFqDmxtJ4wo952vqwEaAwsGqHC8JxGRnowWR8q7DywCahoQq5dMuEbGEdQhWSWoT2inIAJcuhc2V6iU5PxkSxMTybwR1umWQhlyaVzauFj15COG7Qf3Z4GoBX+p6Ol2UDWHtAOG4gYs/b3wPrlh9+v49zZ/r59voSj3lbscHVwmoVJX2U9AOrF3Jp9rx1OegTjosnfM6d6eern/+Mn20ETAVUJa62uJI+Qsmadk/4vLxvVzwMN4GxB8IhA+tkx7M9keOPvJBgdKgXtngrNRagpM8HR3YxOVWsan9+f6LuO67/T/PMDGGVA6deTVlN7ruPW41vBiYCFMD4pQJQDg0TTE4V2+IBo3NgZKDHijjAxcVurk3/ACCaJWcCIwEm5Cenilxc7Aa6W+VkhaZOm6vXlqt+r5NfRyKZ5ED/YXgUdiFNOLwD6bbxS4Uq8olkkkQyGTyHRGwmxKja3Qij+BTCUcNv7K0p0EoPnRry9fD32ipXf/yu0brq4KGjeoxx3pgPFI5SSiKEw6dDe8nkZjnQfxjHdZG+v6kAjTpC1LETJwFYmP+dwu2bKCWNuJkfZOUJhVKSTG4WIcqvavIAxeVlisvLdWYo44knn+LYiZMcPHQU6oSNUualeFNJfKG3t+Eim4mAdSEAYevbIpaa13HdmjYTb3zz9YT2REB+YX7Gau2mDhmdD3NjaYYm/gsEhMMpCuEc0eISyWSN5W1ywOqLTKMyeU3s6oSO8oj0/UiPhMkvzM8ghGNMHpoUoNFRy7Mu+Sg4rqutDcBz+/u48et1Kw6t1CnBLURmQiJ9n3ur99ixo37ZoYVokZ4sVfWX/i1pAca8YvtwrRRurKxUfy+EfzuuW5Uv5we6yA12AXB+oIvXnrGvXlsSMH3jr8j2lZUia/dXWbu/yuKdW0jfjwwjHYK5wa7IcDRBKwJEJjcLwMevO4wM9LB45xZ3//iNDq82tcInNsAXmY7gOZXNN32XFEsIha2nlBSF2zcj9/Oo2E9l8/oasinElgOdngzKC70NahGfv+lEhlAqm2csU1sk2qAlAeGXSw+dcHmhRod69a0EUBbhyRKeLHF89wNS2TwA73w2VzXn6FAvQjjGZXVLAjTd/E/RyawhHBfhuOQGuzi++0FVF5TFh7HlxZxep3JbTacnOfvlbEAI4PT4DO998gtAcHsHkH5x58Z5ROVdwP4qpuUcqGN9octv/RwWESdaKSXEs+9eViF3Nzw964WFEI768NQ+qFi+khPtqYVsii4TVzdzEdaSABvUS3ilpDg9PmPsyY1ol4Cg8Ov0ZE2Y2HhyI9rmgSvTSwCx//Gxpdd+GxA+nNq57ja20Qj/A9dG7pXRSJUsAAAAAElFTkSuQmCC", "west": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAE1ElEQVR4nO2YzU9cVRjGf+fOnQ7tpvQjDHZSjcEIkgnGECqZAKGNoUxXXXSHkGAgtmGDC/s/WBPDQpIWCITMP6AuHGrUEjuiDW0aRzIFTXWB1RkL2BpDizD3uLicC/N1587MLV3Ik9zMnHvPx/Oc933Pec+BfexjH/87yO2nUHlPoZXTaHSgBXaRXrgazijvJcoSADsipvub3WNTBsoWsLvx9CeJ52aFigQYbrGoAHqJ9SXA0MQ8AMp9Vv9Zx+txlZdjlCJALo2HdwpGmplYkvivf1jvlsbD1A9GJSDco2gPpy4kF6915bwMdwRof+0FdxmVCCcWkEvjYaLfPMh4Ge4IABA6FWBjKyca9swKjixwY24ZMEmrRwmSRprO1hNW+f3ul54R1fxwNEtCaHJyIMjjp2ZZzb400hn1ZmJJwh0B6gejjvuuFI4sIKXBxpZB38dfMByJWxaZiSUz6nW31SKNdM5O/SxRLAYkwOK1Lrakh+OHay3F2TEhtJ111JN+4iZHW9hZQIKV5+D1QOJaFx/1NnE6dNJyI9ghny3KJdgmi7YuNNLbhC5MP5dGGqF56G6rtYiGOwIZMx/uCPDB9G0A6l59XQ1eEfnzF/poDb1VsC9bAYerzF9FUgWtEqHKKiYAJmMP+fBbD15dp6GxWQ1ckRDNU3ibtxMg+sfjfHfbDNTsgFXYvYxuZi5KHD12nFD72WwhxR6r684z53i0tkIqlX9scLCRJZYfEzoVsER0t9UyE0tSpRvMfv87na0nrLrBi1EaGpvZ3Nri6LHj1vvq6iOcv9BXbCgera0w+/XnEqDzzDkAln+zjysna7UEmBpson88rvIdrvYHAXi6ZRpxOBK3yPv9tUU7rfH77URYfXl1ncXEnYJcnW42yrSC7dSifjDKSG8Tw5E4gHKTjJl3AiNt+p3y8xq/nz9TKeZuXqehsdmWfCkCsiEvB+u4snCfy8E6PjOqgdLJ22Hu5nWE0JDSsOVY9oHm5YNHAZitMkm7SR4g1H4WKYsfmSo6kQFceuMJn75XU2k3ZaNcAeLSvHkq89ceAWCqr/Su7JZHu2+7UYkFBEDdi4eA3My0GFKpJF49/yq+trpS8Fs2Knah+sGolWboxtOc77tnMpVKkkolLYLbK0xFqFSAAHODk0aasT5fToX7P/1gEQdyZnasR2Osx6RxwOvhwPbtQLHlU6FiCyhcidwFCseCV9fzukXslplHjfVo/JudiziAGwLEcCTOZOyhlTepGVX45ecfWbpnCly6d5fFxB2W7t1ldKCFi1MLAOgizViPxvrfqwy/ubGnAhBCY2qwiXcmFpBG2krB+155YG1GUhpiMXFHbUxCSkMMTcwzOtBC8GKUmVgSrwci75r7y0hvEzjIYl0RIKXBuvRlbDyTb0t8upa9GWX7tBiamLdSki9vrQBwOnTS8diuxYA6RgrNYz3rMjeoC+Fqf9C68SsFrgnI7mz3IacYqvTclCHfu3wo9W40H+ToQAs+kRt42zNqtxQWbOsUrljgkNgoyV2y2wKsS19ZZNywgLn6SAN1+VuK+/SPx63/6v71xtwyac9BR+3dECCkNBBCk4q4T9cUsWI7qfVdCE1+Nf8XmxsbVOmO3A9HFUpAvjW7lP6z2+/ZFf0+9rGP54j/AFl067zUnRQoAAAAAElFTkSuQmCC", "south-west": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAFNElEQVR4nO2Z3W9TZRzHP885bTYJicStUrdwBTogo0r2SlNxkGWuGKMmXnhhpwOmI3LBBeE/8Aa9WKJAZ4e74Jo7zZgugiB1biyE2bCNBBMzOjre1HgBg/Y8Xpw+Z+3aznN2tkhMv8lJes7zPOd8v8/v5Xl+T6GMMsooowwXEA77Sxdj1wSa0wF9kQCJaBjyxfxncCyg0mPg1WEm9nSIcCygwqNxPj7rZIjMuVYdjgXk4l9cSQIyEQ2rfmsCj9MBC2kDgLqeIQCE0JDSUCJUYMusizEav0NDy/OuiZaCYwG9g4ncQMYjMqSlzvhEku7YpAQrPhiN3wHAq68a3wI4dqHBngCdIT8ekcEjMoApYlejn+n+DsLbnwUWya8AjuLFiQA52BMg2Fy7bKe3Wjbl3bcGHbmPbNu7j9ZgO9gUYUuAEJqciYUJNtcSH0uW7qfp7AmaAlpaq/gj/QSw4sX2wqfpOkLYm1vbMaCIKxG7Gv0AXBidy+unBAjNmeMLocnX9nQCMD+fQkrD1jhbAqQ0xP6BhBTS4HTO8wujcxZhgPPxWc7HZ2lrrQEgvLuWgbPXC15X7BuK/Oyt0hYuBif7GfngrxRH39jBq9tesNIpmIubig0lQFlAGhm2fvyd1bdt7z42PFed9+LU3Byj8RG2bm8AYPr6hG1ujgQA7A/5aH5xo0X80tRtq8OxyE4g3zJKQDHixUQ45WU7iPsiAab7OzgW2Ukom2kW0gaff/srg5fvA3D8zNU834+PJfn5SgpgWfIA/poalX0cwXYQd4b8i4NEhlDLJrw6VG0w/b1q/ToOvFPH0MUk4d2mwGBzLXU9Q7z9bpdjYnZhz8+EJgGkNNCA6/0dVlta6oxcTtIZ8ufNvinEnoDUnJnJNF3HyGT45ecfkNKwxc2WC0lp8OUBM8C+ONiU1+YRGTpDfs79lCI+lkQa5upc6TGsXasiWIz40jZN122nUNsCAL6J36AvEkDPPCza3hnyc2nqNr/dWgDMAO8dTBT161LEAR7cv2ebPNiPAXFu6m95birB++2vcKh3hK8P1gNYC1pa6tx+8BhY3KmqtOivqbGIF4MivxKspK6VfZEAx7+/z6dvVlkCcnP95pdetn77qn0lX3T33l181b48AfPzKW7euGab20oLcwlmLTAVbWdb7whCGhyt38zZx+vzyKvAVMglG780TGuw3XrmlDy4qMhONTVxsrGBbb0jnGxsQAqN44mbBeQVaXUpovPz5vrw3ubFbbfX47g8cVdSHhofz8sYiWgYX7WPjRv9Jf1aEc9F15Yk6Yd/cqRlwTEHN2c7UlVl9b1m0CaiYbw6fDD4pEDAUuJZVwHMo5pKjzkRGf0ZPhkYt81txRbQgPGJJF4dpvs7mImFrdJxoMuLx3i0LPnsfl8IoeGtqLDa9MxD27WAKwEGiO7YJHU9QwUrcCl4PR5u3rjGiYNNlutJaYjDpyfy+q3JQlYK0e56tn40THwsSXwsyfDE7wCcjKwrID4zdZUTS1Zyp4SXwnnYF8GpD7fTHZu07j9TLzcekdYqc/f3Muvf6t41XFugrbWGR2mNvkjA8usdh4YB0wpdWxZdKrtBU5f1uJhV7MK1AMDKIArKJZyeB6n9Ew6s48aFZCIaJp2tcI+cmbQ+rOGIvDh8ekLmxIEj13IVAz9euceThQVKGXLoYpJKG1+wu/dfdWQLnWInaXImFpbR7vo1PZkGlxYoNnNCaHL6q9cLHrv5znJYlTSaCykXK7EKz6rkiGWxVjPz1P2XVkYZ/1f8A31JA4PQatffAAAAAElFTkSuQmCC"};
+
+  /* ---------- casinha em pixel art ---------- */
+  var PX_W = 180, PX_H = 240, PX_DIRS = ["east", "south-east", "south", "south-west", "west", "north-west", "north", "north-east"];
+  var PX_GLY = {
+    "0": "111101101101111", "1": "010110010010111", "2": "111001111100111", "3": "111001111001111", "4": "101101111001001", "5": "111100111001111", "6": "111100111101111", "7": "111001001001001", "8": "111101111101111", "9": "111101111001111",
+    "+": "000010111010000", "k": "101101110101101", "M": "101111111101101", "A": "010101111101101", "U": "101101101101111", "!": "010010010000010", "Z": "111001010100111", "/": "001001010100100", "h": "100100111101101", ".": "000000000000010", " ": "000000000000000"
+  };
+  var PX_ST = [
+    { id: "bed", x: 10, y: 182, w: 54, h: 44, name: "Caminha de luxo" },
+    { id: "feeder", x: 136, y: 118, w: 38, h: 28, name: "Comedouro automático" },
+    { id: "toys", x: 10, y: 74, w: 52, h: 32, name: "Cantinho de brinquedos" },
+    { id: "garden", x: 62, y: 40, w: 42, h: 20, name: "Jardim" },
+    { id: "shop", x: 104, y: 10, w: 70, h: 50, name: "Petshop do bairro" }
+  ];
+  var PX_TGT = { bed: [38, 214, 2], feed: [150, 154, 6], toy: [40, 118, 2], garden: [82, 78, 6], shop: [118, 72, 7] };
+  var pxEl = $("px"), pxC = $("pxc"), pxX = pxC.getContext("2d"), pxImgs = {};
+  var PX = { on: false, raf: 0, last: 0, t: 0, parts: [], hudT: 0, toast: null, tt: 0, dog: { x: 90, y: 150, tx: 90, ty: 150, dir: 2, st: "idle", timer: 1.5, act: null, wp: 0, jump: 0, jt: 0 } };
+  Object.keys(PXS).forEach(function (k) { var im = new Image(); im.src = PXS[k]; pxImgs[k] = im; });
+  function pxR(x, y, w, h, c) { pxX.fillStyle = c; pxX.fillRect(Math.round(x), Math.round(y), w, h); }
+  function pxText(s, x, y, c, o) {
+    s = String(s); var cx = x, i, j, g, k;
+    for (k = 0; k < (o ? 2 : 1); k++) {
+      cx = x;
+      for (i = 0; i < s.length; i++) {
+        g = PX_GLY[s[i]] || PX_GLY[" "];
+        for (j = 0; j < 15; j++) if (g[j] === "1") { var gx = cx + (j % 3), gy = y + Math.floor(j / 3); if (k === 0 && o) { pxR(gx - 1, gy, 3, 1, o); pxR(gx, gy - 1, 1, 3, o); pxR(gx, gy, 1, 2, o); } else if (k === 1 || !o) pxR(gx, gy, 1, 1, c); }
+        cx += 4;
+      }
+    }
+  }
+  function pxNight() { var h = hourNow(); return h >= 20 || h < 5 ? 0.42 : h >= 18 ? 0.22 : h >= 17 || (h >= 5 && h < 6.5) ? 0.1 : 0; }
+  function pxTier(lv) { return lv >= 100 ? 4 : lv >= 50 ? 3 : lv >= 25 ? 2 : lv >= 10 ? 1 : 0; }
+  function pxHole(s, name) {
+    pxX.globalAlpha = 0.28; pxR(s.x, s.y, s.w, s.h, "#fff7e0"); pxX.globalAlpha = 1;
+    for (var i = 0; i < s.w; i += 4) { pxR(s.x + i, s.y, 2, 1, "#6b4426"); pxR(s.x + i, s.y + s.h - 1, 2, 1, "#6b4426"); }
+    for (var j = 0; j < s.h; j += 4) { pxR(s.x, s.y + j, 1, 2, "#6b4426"); pxR(s.x + s.w - 1, s.y + j, 1, 2, "#6b4426"); }
+    var cx = s.x + s.w / 2 - 2, cy = s.y + s.h / 2 - 2; pxR(cx, cy + 1, 5, 1, "#6b4426"); pxR(cx + 2, cy - 1, 1, 5, "#6b4426");
+  }
+  function pxRoom(t, lv) {
+    var h = hourNow(), i, j;
+    // parede
+    pxR(0, 0, PX_W, 60, "#ead3b0"); for (i = 6; i < PX_W; i += 18) pxR(i, 0, 6, 56, "#e2c9a2");
+    pxR(0, 0, PX_W, 3, "#c9a77c"); pxR(0, 56, PX_W, 4, "#8a5a3b"); pxR(0, 56, PX_W, 1, "#b07a52");
+    // chão de tabuas
+    for (j = 0; j < 15; j++) {
+      var y = 60 + j * 12; pxR(0, y, PX_W, 12, j % 2 ? "#c68c57" : "#cf965f"); pxR(0, y, PX_W, 1, "#a56d41");
+      for (i = ((j * 29) % 40) - 40; i < PX_W; i += 40) pxR(i, y, 1, 12, "#a56d41");
+    }
+    // janela
+    var sky = h >= 20 || h < 5 ? "#1c2559" : h >= 17 || h < 6.5 ? "#f2a15a" : "#8fd6ff";
+    pxR(12, 8, 48, 38, "#6b4426"); pxR(15, 11, 42, 32, sky); 
+    if (sky === "#1c2559") { pxR(22, 17, 1, 1, "#fff"); pxR(46, 20, 1, 1, "#fff"); pxR(32, 32, 1, 1, "#fff"); pxR(50, 36, 1, 1, "#fff"); pxR(26, 24, 5, 5, "#f6f1c8"); pxR(28, 23, 4, 5, sky); }
+    else if (sky === "#f2a15a") { pxR(40, 30, 10, 10, "#ffe27a"); pxR(18, 36, 38, 7, "#cf7a3c"); }
+    else { pxR(40, 15, 9, 9, "#fff2a8"); pxR(20, 20, 12, 4, "#fff"); pxR(24, 18, 8, 3, "#fff"); pxR(18, 36, 38, 7, "#6fbf5a"); }
+    pxR(34, 11, 2, 32, "#6b4426"); pxR(15, 26, 42, 2, "#6b4426"); pxR(10, 46, 52, 3, "#8a5a3b");
+    if (h >= 6.5 && h < 17) { pxX.globalAlpha = 0.16; pxR(14, 60, 46, 4, "#fff6c0"); pxR(10, 64, 56, 8, "#fff6c0"); pxX.globalAlpha = 1; }
+    // quadro
+    pxR(112, 12, 0, 0, "#000");
+    // tapete
+    pxR(34, 112, 112, 70, "#f0d9a0"); pxR(37, 115, 106, 64, "#a83a3a");
+    for (j = 0; j < 4; j++) for (i = 0; i < 7; i++) { var dx = 44 + i * 14 + (j % 2 ? 7 : 0), dy = 120 + j * 14; pxR(dx + 2, dy, 2, 6, "#d86a5a"); pxR(dx, dy + 2, 6, 2, "#d86a5a"); }
+    pxR(37, 115, 106, 2, "#7d2a2a"); pxR(37, 177, 106, 2, "#7d2a2a");
+    for (i = 34; i < 146; i += 5) { pxR(i, 109, 1, 3, "#f0d9a0"); pxR(i, 182, 1, 3, "#f0d9a0"); }
+  }
+  function pxBed(lv) {
+    var tr = pxTier(lv), c1 = ["#6a7fb5", "#c4453f", "#7a52c4", "#e1a92d"][Math.min(3, tr)], c2 = ["#8da2d6", "#e86a60", "#a07be0", "#ffd566"][Math.min(3, tr)];
+    pxR(10, 188, 54, 38, "#3a2616"); pxR(12, 190, 50, 34, "#8a5a3b"); pxR(14, 192, 46, 30, c1); pxR(16, 194, 42, 26, c2);
+    pxR(16, 194, 42, 4, c1); pxR(20, 200, 34, 14, c1); pxR(22, 202, 30, 10, c2);
+    if (tr >= 1) { pxR(18, 196, 14, 7, "#fff"); pxR(18, 196, 14, 1, "#e6e6e6"); }
+    if (tr >= 2) { pxR(44, 196, 12, 7, "#ffd566"); pxR(46, 198, 8, 3, "#e1a92d"); }
+    if (tr >= 3) { for (var i = 12; i < 62; i += 6) pxR(i, 190, 2, 2, "#ffe58a"); }
+  }
+  function pxFeeder(lv, t) {
+    var tr = pxTier(lv);
+    pxR(138, 122, 36, 24, "#3a2616"); pxR(140, 124, 32, 20, "#6e7a8a"); pxR(140, 124, 32, 3, "#9aa7b8");
+    pxR(144, 130, 10, 8, "#d6dde8"); pxR(146, 132, 6, 4, "#b7794a"); pxR(158, 130, 10, 8, "#d6dde8"); pxR(160, 132, 6, 4, tr >= 1 ? "#4fa8e0" : "#b7794a");
+    if (tr >= 2) { pxR(150, 114, 14, 10, "#c8d2de"); pxR(152, 116, 10, 4, "#e6edf5"); pxR(156, 124, 2, 3, "#b7794a"); }
+    pxR(142, 140, 2, 2, "#4a3a2a"); pxR(166, 140, 2, 2, "#4a3a2a");
+  }
+  function pxToys(lv, t) {
+    var tr = pxTier(lv);
+    pxR(14, 94, 40, 12, "#7aa7d8"); pxR(16, 96, 36, 8, "#a6c9ee"); pxR(14, 94, 40, 1, "#cfe2f6");
+    pxR(18, 82, 10, 10, "#e8e03a"); pxR(18, 85, 10, 1, "#fff"); pxR(20, 83, 6, 1, "#fff"); pxR(18, 82, 10, 1, "#9a9418");
+    pxR(34, 84, 14, 6, "#f2e8d0"); pxR(32, 82, 4, 4, "#f2e8d0"); pxR(32, 88, 4, 4, "#f2e8d0"); pxR(46, 82, 4, 4, "#f2e8d0"); pxR(46, 88, 4, 4, "#f2e8d0");
+    if (tr >= 1) { pxR(22, 98, 8, 6, "#e0504a"); pxR(24, 96, 4, 3, "#e0504a"); pxR(26, 99, 1, 1, "#fff"); }
+    if (tr >= 2) { pxR(38, 96, 12, 8, "#a07be0"); pxR(40, 98, 8, 4, "#c8aaf2"); pxR(42, 94, 4, 3, "#a07be0"); }
+  }
+  function pxGarden(lv, t) {
+    var n = Math.min(5, 1 + Math.floor(lv / 8)), i;
+    for (i = 0; i < n; i++) {
+      var x = 64 + i * 8, hh = 6 + (i % 3) * 3 + pxTier(lv);
+      pxR(x, 49, 7, 8, "#a8532f"); pxR(x - 1, 49, 9, 2, "#c46a3a"); pxR(x + 3, 49 - hh, 1, hh, "#3f8f3a");
+      pxR(x, 49 - hh, 3, 2, "#5cb84a"); pxR(x + 4, 49 - hh + 2, 3, 2, "#5cb84a");
+      if (lv >= 10 + i * 4) { pxR(x + 2, 47 - hh, 3, 3, ["#ff6a8a", "#ffd23f", "#fff", "#c084fc", "#ff9a3d"][i % 5]); pxR(x + 3, 48 - hh, 1, 1, "#7a3a00"); }
+    }
+  }
+  function pxShop(lv, t) {
+    var tr = pxTier(lv), i;
+    pxR(104, 22, 70, 36, "#3a2616"); pxR(106, 24, 66, 32, "#d9b27a");
+    pxR(106, 42, 66, 14, "#8a5a3b"); pxR(106, 42, 66, 2, "#b07a52");
+    for (i = 0; i < 66; i += 6) pxR(106 + i, 10, 6, 12, (i / 6) % 2 ? "#f4f0e4" : "#d8453f");
+    pxR(104, 22, 70, 3, "#8c2a26");
+    pxR(110, 30, 18, 8, "#fff3d0"); pxText("PET", 113, 32, "#8a2a26"); pxR(132, 30, 10, 10, tr >= 2 ? "#ffd566" : "#e8d9b0");
+    pxR(146, 32, 8, 8, "#c4453f"); pxR(158, 32, 8, 8, "#4fa8e0"); pxR(110, 44, 10, 8, "#f2e8d0"); pxR(124, 46, 14, 6, "#e0504a");
+    if (tr >= 3) { pxX.globalAlpha = 0.5 + 0.4 * Math.sin(t * 3); pxR(134, 12, 4, 4, "#ffe58a"); pxR(162, 18, 3, 3, "#ffe58a"); pxX.globalAlpha = 1; }
+  }
+  function pxBasket(fill, full, t) {
+    var by = 196 + (full ? Math.round(-Math.abs(Math.sin(t * 5)) * 2) : 0);
+    pxR(130, 226, 38, 3, "#00000033");
+    pxR(130, by + 12, 38, 18, "#3a2616"); pxR(132, by + 14, 34, 14, "#c4893f");
+    for (var i = 0; i < 34; i += 4) { pxR(132 + i, by + 14, 2, 14, "#a8702a"); }
+    pxR(132, by + 19, 34, 2, "#a8702a"); pxR(132, by + 24, 34, 2, "#a8702a"); pxR(130, by + 10, 38, 4, "#e0a85a");
+    var n = Math.round(fill * 6), k;
+    for (k = 0; k < n; k++) { var bx = 134 + (k % 3) * 11, bb = by + 2 - Math.floor(k / 3) * 5 + (k % 2); pxR(bx, bb + 4, 9, 4, "#f6efe0"); pxR(bx - 1, bb + 3, 3, 3, "#f6efe0"); pxR(bx - 1, bb + 6, 3, 3, "#f6efe0"); pxR(bx + 7, bb + 3, 3, 3, "#f6efe0"); pxR(bx + 7, bb + 6, 3, 3, "#f6efe0"); }
+    if (full) { pxX.globalAlpha = 0.5 + 0.5 * Math.sin(t * 6); pxR(128, by + 2, 3, 3, "#ffe58a"); pxR(166, by + 4, 3, 3, "#ffe58a"); pxX.globalAlpha = 1; }
+  }
+  function pxHeart(x, y, c) { pxR(x + 1, y, 2, 1, c); pxR(x + 4, y, 2, 1, c); pxR(x, y + 1, 7, 2, c); pxR(x + 1, y + 3, 5, 1, c); pxR(x + 2, y + 4, 3, 1, c); pxR(x + 3, y + 5, 1, 1, c); }
+  function pxPart(k, x, y, extra) { var p = { k: k, x: x, y: y, vx: (Math.random() - 0.5) * 14, vy: -18 - Math.random() * 10, t: 0, life: 1.4 }; if (extra) for (var q in extra) p[q] = extra[q]; PX.parts.push(p); }
+  function pxToast(msg, id) {
+    var el = $("pxToast"); if (!msg) { el.hidden = true; PX.toast = null; return; }
+    PX.toast = id || null; PX.tt = Date.now() + 6000; el.innerHTML = ""; var sp = document.createElement("span"); sp.textContent = msg; el.appendChild(sp);
+    if (id) {
+      var h = homeS(), s = H_ST.filter(function (x) { return x.id === id; })[0], c = hCostN(s, 0, 1), b = document.createElement("button"); b.type = "button"; b.className = "primary small"; b.setAttribute("data-pxb", id);
+      b.textContent = "Construir · 🦴 " + hFmt(c); b.disabled = (P.coins || 0) < c; el.appendChild(b);
+    }
+    el.hidden = false;
+  }
+  function pxHud() {
+    var h = homeS(); if (!h) return; var rate = hRate(h), cap = rate * hCapH(h); hAccrue(Date.now());
+    $("pxBank").textContent = "🦴 " + hFmt(h.bank) + " / " + hFmt(cap); $("pxRate").textContent = hFmt(rate) + "/h" + ((h.crowns || 0) ? " · ×" + hCrown(h).toFixed(2).replace(".", ",") : "");
+    $("pxCol").disabled = Math.floor(h.bank) < 1;
+  }
+  function pxFit() {
+    var box = $("pxwrap"), w = box.clientWidth, hh = box.clientHeight; if (!w || !hh) return;
+    var sc = Math.min(w / PX_W, hh / PX_H); pxC.style.width = Math.floor(PX_W * sc) + "px"; pxC.style.height = Math.floor(PX_H * sc) + "px";
+  }
+  function pxOpen() {
+    if (!P) return; closePanel(); homeS(); PX.on = true; pxEl.hidden = false; PX.last = 0; PX.parts = []; PX.dog.x = 90; PX.dog.y = 150; PX.dog.st = "idle"; PX.dog.timer = 1; PX.dog.dir = 2;
+    pxToast(null); pxFit(); pxHud(); PX.raf = requestAnimationFrame(pxLoop);
+  }
+  function pxClose() { PX.on = false; pxEl.hidden = true; cancelAnimationFrame(PX.raf); pxToast(null); if (P) { renderAll(true); updateBadges(); } }
+  function pxPick() {
+    var h = homeS(), b = [["wander", 38], ["idle", 22]], tot = 0, x, i;
+    if (h.lv.bed) b.push(["bed", 14]); if (h.lv.feeder) b.push(["feed", 14]); if (h.lv.toys) b.push(["toy", 14]); if (h.lv.garden) b.push(["garden", 10]); if (h.lv.shop) b.push(["shop", 10]);
+    b.forEach(function (e) { tot += e[1]; }); x = Math.random() * tot; var a = "idle";
+    for (i = 0; i < b.length; i++) { x -= b[i][1]; if (x <= 0) { a = b[i][0]; break; } }
+    var d = PX.dog;
+    if (a === "idle") { d.st = "idle"; d.timer = 1.2 + Math.random() * 2; d.dir = Math.random() < 0.6 ? 2 : Math.floor(Math.random() * 8); d.act = null; }
+    else if (a === "wander") { d.tx = 30 + Math.random() * 120; d.ty = 90 + Math.random() * 130; d.st = "go"; d.act = null; }
+    else { var t = PX_TGT[a]; d.tx = t[0]; d.ty = t[1]; d.st = "go"; d.act = a; }
+  }
+  function pxUpdate(dt, t) {
+    var d = PX.dog, i;
+    if (d.st === "go") {
+      var dx = d.tx - d.x, dy = d.ty - d.y, dist = Math.hypot(dx, dy);
+      if (dist < 1.5) {
+        d.wp = 0;
+        if (d.act) { var tg = PX_TGT[d.act]; d.dir = tg[2]; d.st = d.act === "bed" ? "sleep" : d.act === "feed" ? "eat" : d.act === "toy" ? "play" : "sniff"; d.timer = d.act === "bed" ? 6 : d.act === "toy" ? 3.2 : 3.4; d.jt = 0; }
+        else { d.st = "idle"; d.timer = 1 + Math.random() * 2; }
+      } else {
+        var sp = 36 * dt, mx = dx / dist * Math.min(sp, dist), my = dy / dist * Math.min(sp, dist); d.x += mx; d.y += my; d.wp += dt * 11;
+        var ang = Math.atan2(dy, dx); d.dir = ((Math.round(ang / (Math.PI / 4)) % 8) + 8) % 8;
+      }
+    } else {
+      d.timer -= dt;
+      if (d.st === "play") { d.jt += dt; if (Math.floor(d.jt * 2.2) !== Math.floor((d.jt - dt) * 2.2)) pxPart("c", 44, 112, { vy: -10, life: 0.8, vx: 0 }); }
+      if (d.st === "eat" && Math.random() < dt * 3) pxPart("m", d.x + 6, d.y - 14, { life: 0.7, vy: -8 });
+      if (d.st === "sleep" && Math.random() < dt * 0.9) pxPart("z", d.x + 12, d.y - 34, { life: 1.8, vy: -9, vx: 4 });
+      if (d.st === "love") { d.jt += dt; if (d.timer <= 0) { d.st = "idle"; d.timer = 0.6; } }
+      else if (d.timer <= 0) pxPick();
+    }
+    for (i = PX.parts.length - 1; i >= 0; i--) { var p = PX.parts[i]; p.t += dt; p.x += p.vx * dt; p.y += p.vy * dt; if (p.k !== "c") p.vy *= 0.985; if (p.t > p.life) PX.parts.splice(i, 1); }
+    if (PX.toast && Date.now() > PX.tt) pxToast(null);
+  }
+  function pxDraw(t) {
+    var h = homeS(), lv = h.lv, d = PX.dog, i;
+    pxX.imageSmoothingEnabled = false; pxRoom(t, lv);
+    PX_ST.forEach(function (s) {
+      var l = lv[s.id] || 0;
+      if (!l) pxHole(s);
+      else if (s.id === "bed") pxBed(l); else if (s.id === "feeder") pxFeeder(l, t); else if (s.id === "toys") pxToys(l, t); else if (s.id === "garden") pxGarden(l, t); else if (s.id === "shop") pxShop(l, t);
+    });
+    var rate = hRate(h), cap = rate * hCapH(h), full = cap > 0 && h.bank >= cap - 0.01; pxBasket(cap > 0 ? h.bank / cap : 0, full, t);
+    // cachorro
+    var im = pxImgs[PX_DIRS[d.dir]], jy = 0, ox = 0;
+    if (d.st === "go") jy = -Math.round(Math.abs(Math.sin(d.wp)) * 2);
+    else if (d.st === "play") jy = -Math.round(Math.abs(Math.sin(d.jt * Math.PI * 2.2)) * 12);
+    else if (d.st === "love") jy = -Math.round(Math.abs(Math.sin(d.jt * Math.PI * 4)) * 8);
+    else if (d.st === "eat") jy = Math.round(Math.sin(t * 9) > 0 ? 1 : 0);
+    else if (d.st === "sniff") ox = Math.sin(t * 7) > 0 ? 1 : 0;
+    else jy = Math.sin(t * 2.2) > 0.7 ? -1 : 0;
+    var dx0 = Math.round(d.x - 24 + ox), dy0 = Math.round(d.y - 45 + jy);
+    pxX.globalAlpha = 0.3; pxR(d.x - 12, d.y - 3, 24, 4, "#2a1608"); pxR(d.x - 10, d.y - 4, 20, 1, "#2a1608"); pxX.globalAlpha = 1;
+    if (im && im.complete) {
+      if (d.st === "sleep") pxX.drawImage(im, dx0, dy0 + 9 + (Math.sin(t * 1.6) > 0 ? 1 : 0), 48, 38);
+      else pxX.drawImage(im, dx0, dy0, 48, 48);
+    }
+    for (i = 0; i < PX.parts.length; i++) {
+      var p = PX.parts[i], a = 1 - Math.max(0, p.t / p.life - 0.6) / 0.4; pxX.globalAlpha = Math.max(0, Math.min(1, a));
+      if (p.k === "h") pxHeart(Math.round(p.x), Math.round(p.y), "#ff4d6a");
+      else if (p.k === "z") pxText("Z", Math.round(p.x), Math.round(p.y), "#fff", "#2a1608");
+      else if (p.k === "c") { pxR(Math.round(p.x), Math.round(p.y), 5, 5, "#e8e03a"); pxR(Math.round(p.x), Math.round(p.y), 5, 1, "#fff"); }
+      else if (p.k === "m") pxR(Math.round(p.x), Math.round(p.y), 2, 2, "#b7794a");
+      else if (p.k === "t") pxText(p.s, Math.round(p.x), Math.round(p.y), p.c || "#ffe58a", "#2a1608");
+      else if (p.k === "s") { pxR(Math.round(p.x), Math.round(p.y), 1, 3, "#fff6b0"); pxR(Math.round(p.x) - 1, Math.round(p.y) + 1, 3, 1, "#fff6b0"); }
+      pxX.globalAlpha = 1;
+    }
+    var nt = pxNight(); if (nt > 0) { pxX.globalAlpha = nt; pxR(0, 0, PX_W, PX_H, "#0d1235"); pxX.globalAlpha = 1; if (nt > 0.3) { pxX.globalAlpha = 0.22; pxR(8, 6, 56, 44, "#ffd98a"); pxX.globalAlpha = 1; } }
+  }
+  function pxLoop(ts) {
+    if (!PX.on) return; var dt = Math.min(0.05, (ts - (PX.last || ts)) / 1000); PX.last = ts; PX.t += dt;
+    pxUpdate(dt, PX.t); pxDraw(PX.t); PX.hudT += dt; if (PX.hudT > 0.25) { PX.hudT = 0; pxHud(); }
+    PX.raf = requestAnimationFrame(pxLoop);
+  }
+  function pxCollect() {
+    var h = homeS(); hAccrue(Date.now()); var n = Math.floor(h.bank); if (n < 1) { pxToast("A cesta está vazia. Construa estações para render ossos."); return; }
+    pxPart("t", 136, 190, { s: "+" + hFmt(n), vy: -22, life: 1.6, vx: 0, c: "#ffe58a" });
+    for (var i = 0; i < 8; i++) pxPart("c", 140 + Math.random() * 20, 200, { vy: -30 - Math.random() * 20, life: 0.9 });
+    hCollect(); pxHud(); PX.dog.st = "love"; PX.dog.timer = 0.9; PX.dog.jt = 0; PX.dog.dir = 2;
+  }
+  function pxTap(ev) {
+    var r = pxC.getBoundingClientRect(), x = (ev.clientX - r.left) * PX_W / r.width, y = (ev.clientY - r.top) * PX_H / r.height, d = PX.dog, h = homeS(), i;
+    if (x < 0 || y < 0 || x > PX_W || y > PX_H) return;
+    if (x > 128 && x < 170 && y > 190 && y < 232) { pxCollect(); return; }
+    if (Math.abs(x - d.x) < 20 && y > d.y - 46 && y < d.y + 4) {
+      for (i = 0; i < 3; i++) pxPart("h", d.x - 6 + i * 6, d.y - 48, { vx: (i - 1) * 8, life: 1.2 });
+      pxPart("t", d.x - 6, d.y - 56, { s: "AU!", vy: -10, life: 1, vx: 0, c: "#fff" });
+      d.st = "love"; d.timer = 1; d.jt = 0; d.dir = 2; st.joy = clamp(st.joy + 1, 0, 100); return;
+    }
+    for (i = 0; i < PX_ST.length; i++) {
+      var s = PX_ST[i]; if (x >= s.x && x <= s.x + s.w && y >= s.y && y <= s.y + s.h) {
+        if (!h.lv[s.id]) { pxToast(s.name + " ainda não foi construída.", s.id); return; }
+        var l = h.lv[s.id], stn = H_ST.filter(function (q) { return q.id === s.id; })[0];
+        pxToast(s.name + " · nível " + l + " · rende " + hFmt(hStRate(stn, l) * hCrown(h)) + "/h"); return;
+      }
+    }
+    if (y > 64) { d.tx = clamp(x, 26, 154); d.ty = clamp(y, 86, 228); d.st = "go"; d.act = null; pxToast(null); }
+  }
+  pxC.addEventListener("pointerdown", function (ev) { ev.preventDefault(); pxTap(ev); });
+  $("pxToast").addEventListener("click", function (ev) {
+    var b = ev.target.closest ? ev.target.closest("button") : null; if (!b || b.disabled) return; var id = b.getAttribute("data-pxb"); if (!id) return;
+    var q = hQty; hQty = 1; hBuy(id); hQty = q; pxToast(null);
+    for (var i = 0; i < 10; i++) { var s = PX_ST.filter(function (z) { return z.id === id; })[0]; pxPart("s", s.x + Math.random() * s.w, s.y + Math.random() * s.h, { vy: -14, vx: 0, life: 1 }); }
+  });
+  $("pxCol").addEventListener("click", pxCollect); $("pxX").addEventListener("click", pxClose);
+  window.addEventListener("resize", function () { if (PX.on) pxFit(); });
+
   if (db.current && db.profiles[db.current]) enterProfile(db.current, false);
   else if (ids.length === 1) enterProfile(ids[0], false);
   else if (ids.length > 1) { renderPicker(); showView("picker"); }
@@ -2573,7 +2841,7 @@ function draw(ts) {
 <button type="button" id="pwaBtn" hidden style="position:fixed;right:10px;bottom:10px;z-index:99;padding:9px 14px;border:0;border-radius:14px;background:#2f9d7f;color:#fff;font:700 0.85rem Nunito,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3)" onclick="if(__ip){__ip.prompt();__ip=null;this.hidden=true}">Instalar app</button>
 <script>
 if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
-window.__BUILD = "1791695208";
+window.__BUILD = "1791721905";
 (function () {
   function banner() {
     if (document.getElementById("updBtn")) return;
